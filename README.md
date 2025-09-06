@@ -197,12 +197,14 @@ import { ChatEnabled, DefaultChatbot } from '@ai-hud/chat-enabled';
   windowContent={
     <DefaultChatbot
       conversationId="example-red"
-      welcome="Try asking: What is in red color?"
+      welcome="Try asking: Which number is in red color?"
     />
   }
 >
   <div style={{ width: 280, background: '#f3f4f6', borderRadius: 12, padding: 12 }}>
-    This sentence has a <span style={{ color: '#ef4444', fontWeight: 600 }}>RED</span> word.
+    <span>
+      24 and <span style={{ color: "#ef4444", fontWeight: 600 }}>18</span> are my favorite numbers.
+    </span>
   </div>
 </ChatEnabled>
 ```
