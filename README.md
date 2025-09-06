@@ -158,6 +158,14 @@ import { ChatEnabled, DefaultChatbot } from '@ai-hud/chat-enabled';
    - pass a custom `conversationId` to persist/reuse a specific thread
    - omit it to auto-generate a new id for each mount
 
+DefaultChatbot props (commonly used):
+- **conversationId?**: string or null; when omitted, a new id is generated per mount
+- **context?**: any JSON-serializable object; included as a system message for additional grounding/context
+- **systemPrompt?**: system instruction string
+- **welcome?**: first assistant message in a new conversation
+- **model?**: OpenAI model id (default: gpt-4o-mini)
+- **placeholderApiKey?**: replace with your real API key
+
 You can programmatically clear conversations:
 
 ```ts

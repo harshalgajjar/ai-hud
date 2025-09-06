@@ -25,6 +25,7 @@ export type DefaultChatbotProps = {
   className?: string;
   style?: React.CSSProperties;
   conversationId?: string | null; // when null/undefined, a new id is generated per mount
+  context?: unknown; // arbitrary JSON-like object passed to the model as system context
 };
 
 const OPENAI_API_URL = "https://api.openai.com/v1/chat/completions";
@@ -46,6 +47,7 @@ export const DefaultChatbot: React.FC<DefaultChatbotProps> = ({
   className,
   style,
   conversationId,
+  context,
 }) => {
   const generatedIdRef = useRef<string | null>(null);
   if (!conversationId && !generatedIdRef.current) {
@@ -101,6 +103,15 @@ export const DefaultChatbot: React.FC<DefaultChatbotProps> = ({
       if (systemPrompt) {
         result.push({ role: "system", content: systemPrompt });
       }
+      if (typeof context !== "undefined") {
+        let serialized = "";
+        try {
+          serialized = JSON.stringify(context);
+        } catch {
+          serialized = String(context);
+        }
+        result.push({ role: "system", content: `Context: ${serialized}` });
+      }
       for (const m of uiMessages) {
         if (m.role === "assistant") {
           result.push({ role: "assistant", content: m.text || "" });
@@ -127,9 +138,10 @@ export const DefaultChatbot: React.FC<DefaultChatbotProps> = ({
           result.push({ role: "user", content: nextUser.text });
         }
       }
+      console.log("result", result)
       return result;
     },
-    [systemPrompt]
+    [systemPrompt, context]
   );
 
   const send = useCallback(async () => {

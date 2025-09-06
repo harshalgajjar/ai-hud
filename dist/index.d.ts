@@ -67,6 +67,7 @@ type DefaultChatbotProps = {
     className?: string;
     style?: React.CSSProperties;
     conversationId?: string | null;
+    context?: unknown;
 };
 declare const DefaultChatbot: React.FC<DefaultChatbotProps>;
 

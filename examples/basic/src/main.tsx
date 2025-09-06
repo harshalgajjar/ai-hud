@@ -69,7 +69,7 @@ function App() {
             windowContent={<DefaultChatbot conversationId="example-left" />}
           >
             <div className="card">Open window (left)</div>
-            
+
             {/* Provide DefaultChatbot explicitly via windowContent */}
           </ChatEnabled>
         </div>
@@ -84,14 +84,31 @@ function App() {
           </ChatEnabled>
         </div>
         <div>
+          <h3>DefaultChatbot with context</h3>
+          <ChatEnabled
+            openWindowOnClick
+            windowProps={{ title: "Chat with Context", position: "auto", width: 360, height: 420 }}
+            windowContent={
+              <DefaultChatbot
+                conversationId="example-context"
+                context={{ userId: 123, plan: "pro", features: ["analytics", "exports"], locale: "en-US" }}
+                systemPrompt="You are a helpful assistant. Use the provided context when relevant."
+                welcome="Ask me about what context I have."
+              />
+            }
+          >
+            <div className="card">Open window (context)</div>
+          </ChatEnabled>
+        </div>
+        <div>
           <h3>Floating window with default chatbot without conversationId</h3>
           <ChatEnabled
             openWindowOnClick
-            windowProps={{ title: "Chat (Left and draggable)", position: "bottom-left", width: 360, height: 420 }}
+            windowProps={{ title: "Chat", position: "auto", width: 360, height: 420 }}
             windowContent={<DefaultChatbot />}
           >
-            <div className="card">Open window (left)</div>
-            
+            <div className="card">Open window (auto)</div>
+
             {/* Provide DefaultChatbot explicitly via windowContent */}
           </ChatEnabled>
         </div>
