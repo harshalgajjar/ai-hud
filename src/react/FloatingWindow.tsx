@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 export type FloatingWindowCorner = "top-left" | "top-right" | "bottom-left" | "bottom-right";
 
@@ -19,6 +19,7 @@ export type FloatingWindowProps = {
   bodyClassName?: string;
   closeButtonAriaLabel?: string;
   closeOnEscape?: boolean;
+  draggable?: boolean;
 };
 
 export const FloatingWindow: React.FC<FloatingWindowProps> = ({
@@ -38,8 +39,13 @@ export const FloatingWindow: React.FC<FloatingWindowProps> = ({
   bodyClassName,
   closeButtonAriaLabel = "Close",
   closeOnEscape = true,
+  draggable = true,
 }) => {
   const [isCloseHovered, setIsCloseHovered] = useState(false);
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const [dragging, setDragging] = useState(false);
+  const dragStart = useRef<{ x: number; y: number; top: number; left: number } | null>(null);
+  const [dragTopLeft, setDragTopLeft] = useState<{ top: number; left: number } | null>(null);
   useEffect(() => {
     if (!closeOnEscape) return;
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -66,14 +72,39 @@ export const FloatingWindow: React.FC<FloatingWindowProps> = ({
     }
   })();
 
+  const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!draggable) return;
+    const el = containerRef.current;
+    if (!el) return;
+    const rect = el.getBoundingClientRect();
+    dragStart.current = { x: e.clientX, y: e.clientY, top: rect.top, left: rect.left };
+    setDragTopLeft({ top: rect.top, left: rect.left });
+    setDragging(true);
+    const handleMove = (ev: PointerEvent) => {
+      if (!dragStart.current) return;
+      const dx = ev.clientX - dragStart.current.x;
+      const dy = ev.clientY - dragStart.current.y;
+      setDragTopLeft({ top: dragStart.current.top + dy, left: dragStart.current.left + dx });
+    };
+    const handleUp = () => {
+      setDragging(false);
+      dragStart.current = null;
+      window.removeEventListener("pointermove", handleMove);
+      window.removeEventListener("pointerup", handleUp);
+    };
+    window.addEventListener("pointermove", handleMove);
+    window.addEventListener("pointerup", handleUp, { once: true });
+  };
+
   return (
     <div
+      ref={containerRef}
       role="dialog"
       aria-modal="false"
       className={className}
       style={{
         position: "fixed",
-        ...edgeStyle,
+        ...(dragTopLeft ? { top: dragTopLeft.top, left: dragTopLeft.left } : edgeStyle),
         width,
         height,
         minWidth,
@@ -87,6 +118,7 @@ export const FloatingWindow: React.FC<FloatingWindowProps> = ({
         display: "flex",
         flexDirection: "column",
         overflow: "hidden",
+        userSelect: dragging ? "none" : undefined,
         ...style,
       }}
     >
@@ -99,7 +131,9 @@ export const FloatingWindow: React.FC<FloatingWindowProps> = ({
           padding: "10px 12px",
           borderBottom: "1px solid rgba(0,0,0,0.06)",
           background: "#f9fafb",
+          cursor: draggable ? "move" : undefined,
         }}
+        onPointerDown={handlePointerDown}
       >
         <div style={{ fontWeight: 600, color: "#111827" }}>{title}</div>
         <button

@@ -18,6 +18,7 @@ type FloatingWindowProps = {
     bodyClassName?: string;
     closeButtonAriaLabel?: string;
     closeOnEscape?: boolean;
+    draggable?: boolean;
 };
 declare const FloatingWindow: React.FC<FloatingWindowProps>;
 
