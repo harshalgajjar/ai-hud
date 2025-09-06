@@ -39,6 +39,23 @@ function App() {
             <div className="card">Custom button</div>
           </ChatEnabled>
         </div>
+        <div>
+          <h3>Floating window</h3>
+          <ChatEnabled
+            openWindowOnClick
+            windowProps={{ title: "Chat", position: "bottom-right", width: 360, height: 420 }}
+            windowContent={
+              <div style={{ padding: 12 }}>
+                <p style={{ margin: 0 }}>Hello! This is a floating window.</p>
+                <p style={{ marginTop: 8, color: "#6b7280" }}>
+                  Replace this with your chat UI.
+                </p>
+              </div>
+            }
+          >
+            <div className="card">Open window</div>
+          </ChatEnabled>
+        </div>
       </div>
     </div>
   );

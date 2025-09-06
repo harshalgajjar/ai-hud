@@ -93,6 +93,27 @@ const [open, setOpen] = useState(false);
 
 Note: In JSX you must use `<ChatEnabled />` (PascalCase). A lower-cased alias is exported for named imports, but not for JSX tags.
 
+### Floating window (built-in)
+
+`ChatEnabled` can open a clean floating window on click. Pass `windowContent` for dynamic content and `windowProps` to control size/position.
+
+```tsx
+<ChatEnabled
+  openWindowOnClick
+  windowProps={{ title: 'Chat', position: 'bottom-right', width: 360, height: 480 }}
+  windowContent={
+    <div style={{ padding: 12 }}>
+      {/* your chat UI here */}
+      Hello world
+    </div>
+  }
+>
+  <div style={{ width: 280, height: 160, background: '#f3f4f6', borderRadius: 12 }} />
+</ChatEnabled>
+```
+
+`windowProps` mirrors `FloatingWindow` props: `title`, `position`, `width`, `height`, `minWidth`, `minHeight`, `offset`, `zIndex`, `className`, `style`, `headerClassName`, `bodyClassName`, `closeButtonAriaLabel`, `closeOnEscape`, and `onClose`.
+
 ### Local development
 
 This repo includes a minimal Vite example for development:

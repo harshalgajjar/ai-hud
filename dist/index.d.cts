@@ -1,5 +1,26 @@
 import React from 'react';
 
+type FloatingWindowCorner = "top-left" | "top-right" | "bottom-left" | "bottom-right";
+type FloatingWindowProps = {
+    children: React.ReactNode;
+    title?: React.ReactNode;
+    onClose?: () => void;
+    position?: FloatingWindowCorner;
+    width?: number;
+    height?: number;
+    minWidth?: number;
+    minHeight?: number;
+    offset?: number;
+    zIndex?: number;
+    className?: string;
+    style?: React.CSSProperties;
+    headerClassName?: string;
+    bodyClassName?: string;
+    closeButtonAriaLabel?: string;
+    closeOnEscape?: boolean;
+};
+declare const FloatingWindow: React.FC<FloatingWindowProps>;
+
 type ChatEnabledTrigger = "hover" | "focus" | "always" | "manual";
 type ChatEnabledProps = {
     children: React.ReactNode;
@@ -22,7 +43,10 @@ type ChatEnabledProps = {
         visible: boolean;
         ref: React.Ref<HTMLButtonElement>;
     }) => React.ReactNode;
+    openWindowOnClick?: boolean;
+    windowProps?: Omit<FloatingWindowProps, "children">;
+    windowContent?: React.ReactNode;
 };
 declare const ChatEnabled: React.ForwardRefExoticComponent<ChatEnabledProps & React.RefAttributes<HTMLButtonElement>>;
 
-export { ChatEnabled, type ChatEnabledProps };
+export { ChatEnabled, type ChatEnabledProps, FloatingWindow, type FloatingWindowCorner, type FloatingWindowProps };

@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { FloatingWindow, FloatingWindowProps } from "./FloatingWindow";
 
 export type ChatEnabledTrigger = "hover" | "focus" | "always" | "manual";
 
@@ -25,6 +26,10 @@ export type ChatEnabledProps = {
       ref: React.Ref<HTMLButtonElement>;
     }
   ) => React.ReactNode;
+  // Optional built-in floating window support
+  openWindowOnClick?: boolean; // default false
+  windowProps?: Omit<FloatingWindowProps, "children">;
+  windowContent?: React.ReactNode; // custom content; if absent, shows nothing
 };
 
 export const ChatEnabled = React.forwardRef<HTMLButtonElement, ChatEnabledProps>(
@@ -47,10 +52,14 @@ export const ChatEnabled = React.forwardRef<HTMLButtonElement, ChatEnabledProps>
       open,
       onOpenChange,
       renderButton,
+      openWindowOnClick = false,
+      windowProps,
+      windowContent,
     },
     ref
   ) => {
     const [isHoveredOrFocused, setIsHoveredOrFocused] = useState(false);
+    const [isWindowOpen, setIsWindowOpen] = useState(false);
 
     const resolvedTrigger: ChatEnabledTrigger = trigger ?? "hover";
 
@@ -91,7 +100,10 @@ export const ChatEnabled = React.forwardRef<HTMLButtonElement, ChatEnabledProps>
     const buttonProps: React.ButtonHTMLAttributes<HTMLButtonElement> & { ref: typeof ref; visible: boolean } = {
       type: "button",
       "aria-label": label,
-      onClick,
+      onClick: (e) => {
+        onClick?.(e);
+        if (!disabled && openWindowOnClick) setIsWindowOpen(true);
+      },
       className: buttonClassName,
       disabled,
       style: {
@@ -148,6 +160,17 @@ export const ChatEnabled = React.forwardRef<HTMLButtonElement, ChatEnabledProps>
               </svg>
             )}
           </button>
+        )}
+        {openWindowOnClick && isWindowOpen && (
+          <FloatingWindow
+            {...(windowProps as FloatingWindowProps)}
+            onClose={() => {
+              windowProps?.onClose?.();
+              setIsWindowOpen(false);
+            }}
+          >
+            {windowContent}
+          </FloatingWindow>
         )}
       </div>
     );
