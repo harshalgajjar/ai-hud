@@ -1,0 +1,64 @@
+{
+  "name": "@ai-hud/chat-enabled",
+  "version": "0.1.0",
+  "private": false,
+  "description": "A lightweight React wrapper that shows a hover chat button around its children.",
+  "license": "MIT",
+  "author": "",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/harshal/ai-hud.git"
+  },
+  "bugs": {
+    "url": "https://github.com/harshal/ai-hud/issues"
+  },
+  "homepage": "https://github.com/harshal/ai-hud#readme",
+  "type": "module",
+  "main": "dist/index.cjs",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "sideEffects": false,
+  "peerDependencies": {
+    "react": ">=17",
+    "react-dom": ">=17"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.24",
+    "@types/react-dom": "^18.3.7",
+    "tsup": "^8.5.0",
+    "typescript": "^5.9.2"
+  },
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "clean": "rm -rf dist"
+  },
+  "tsup": {
+    "entry": [
+      "src/index.ts"
+    ],
+    "format": [
+      "esm",
+      "cjs"
+    ],
+    "dts": true,
+    "splitting": false,
+    "sourcemap": true,
+    "minify": true,
+    "clean": true,
+    "external": [
+      "react",
+      "react-dom"
+    ]
+  }
+}
