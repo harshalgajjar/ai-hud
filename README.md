@@ -1,6 +1,6 @@
 ## @ai-hud/chat-enabled
 
-A lightweight React wrapper that overlays a clean hover chat button on its children.
+A lightweight React component wrapper that allows for chatting with components, it's data and with any additional context.
 
 ### Installation
 
