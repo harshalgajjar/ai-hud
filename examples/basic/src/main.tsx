@@ -7,7 +7,7 @@ function App() {
     <div>
       <h1>ChatEnabled basic example</h1>
       <p>Hover the card to see the chat button. Click logs to console.</p>
-      <div style={{ marginTop: 16, display: "flex", gap: 24, alignItems: "flex-start" }}>
+      <div style={{ marginTop: 16, display: "flex", gap: 24, alignItems: "flex-start", flexWrap: "wrap" }}>
         <div>
           <h3>Hover (default)</h3>
           <ChatEnabled onClick={() => console.log("Chat clicked (hover)")}
@@ -43,7 +43,7 @@ function App() {
           <h3>Floating window</h3>
           <ChatEnabled
             openWindowOnClick
-            windowProps={{ title: "Chat", position: "bottom-right", width: 360, height: 420 }}
+            windowProps={{ title: "Chat", position: "bottom-right", width: 360, height: 420, draggable: false }}
             windowContent={
               <div style={{ padding: 12 }}>
                 <p style={{ margin: 0 }}>Hello! This is a floating window.</p>
@@ -60,9 +60,18 @@ function App() {
           <h3>Floating window with default chatbot</h3>
           <ChatEnabled
             openWindowOnClick
-            windowProps={{ title: "Chat (Left)", position: "bottom-left", width: 320, height: 420 }}
+            windowProps={{ title: "Chat (Left and draggable)", position: "bottom-left", width: 360, height: 420 }}
           >
             <div className="card">Open window (left)</div>
+          </ChatEnabled>
+        </div>
+        <div>
+          <h3>Floating window (auto position)</h3>
+          <ChatEnabled
+            openWindowOnClick
+            windowProps={{ title: "Chat (Auto)", position: "auto", width: 360, height: 420 }}
+          >
+            <div className="card">Open window (auto)</div>
           </ChatEnabled>
         </div>
       </div>

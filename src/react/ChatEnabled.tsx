@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useRef, useState } from "react";
 import { FloatingWindow, FloatingWindowProps } from "./FloatingWindow";
 import { DefaultChatbot } from "./DefaultChatbot";
 
@@ -61,6 +61,7 @@ export const ChatEnabled = React.forwardRef<HTMLButtonElement, ChatEnabledProps>
   ) => {
     const [isHoveredOrFocused, setIsHoveredOrFocused] = useState(false);
     const [isWindowOpen, setIsWindowOpen] = useState(false);
+    const internalButtonRef = useRef<HTMLButtonElement | null>(null);
 
     const resolvedTrigger: ChatEnabledTrigger = trigger ?? "hover";
 
@@ -98,6 +99,15 @@ export const ChatEnabled = React.forwardRef<HTMLButtonElement, ChatEnabledProps>
       onBlur: resolvedTrigger === "focus" ? () => { setIsHoveredOrFocused(false); notifyOpenChange(false); } : undefined,
     } as const;
 
+    const setMergedRef = (el: HTMLButtonElement | null) => {
+      internalButtonRef.current = el;
+      if (typeof ref === "function") {
+        ref(el);
+      } else if (ref && typeof ref === "object") {
+        (ref as React.MutableRefObject<HTMLButtonElement | null>).current = el;
+      }
+    };
+
     const buttonProps: React.ButtonHTMLAttributes<HTMLButtonElement> & { ref: typeof ref; visible: boolean } = {
       type: "button",
       "aria-label": label,
@@ -130,7 +140,7 @@ export const ChatEnabled = React.forwardRef<HTMLButtonElement, ChatEnabledProps>
       },
       tabIndex: computedVisible ? 0 : -1,
       "aria-hidden": computedVisible ? undefined : true,
-      ref,
+      ref: setMergedRef,
       visible: computedVisible,
     };
 
@@ -169,6 +179,12 @@ export const ChatEnabled = React.forwardRef<HTMLButtonElement, ChatEnabledProps>
               windowProps?.onClose?.();
               setIsWindowOpen(false);
             }}
+            anchorRect={
+              (windowProps as FloatingWindowProps | undefined)?.anchorRect ??
+              (internalButtonRef.current
+                ? internalButtonRef.current.getBoundingClientRect()
+                : null)
+            }
           >
             {windowContent ?? (
               <DefaultChatbot />

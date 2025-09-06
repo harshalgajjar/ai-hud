@@ -1,12 +1,13 @@
 import React, { useEffect, useRef, useState } from "react";
 
 export type FloatingWindowCorner = "top-left" | "top-right" | "bottom-left" | "bottom-right";
+export type FloatingWindowPosition = FloatingWindowCorner | "auto";
 
 export type FloatingWindowProps = {
   children: React.ReactNode;
   title?: React.ReactNode;
   onClose?: () => void;
-  position?: FloatingWindowCorner;
+  position?: FloatingWindowPosition;
   width?: number; // px
   height?: number; // px
   minWidth?: number;
@@ -20,6 +21,8 @@ export type FloatingWindowProps = {
   closeButtonAriaLabel?: string;
   closeOnEscape?: boolean;
   draggable?: boolean;
+  // When position is 'auto', anchorRect helps place the window near the trigger button
+  anchorRect?: { top: number; left: number; right: number; bottom: number; width: number; height: number } | null;
 };
 
 export const FloatingWindow: React.FC<FloatingWindowProps> = ({
@@ -40,6 +43,7 @@ export const FloatingWindow: React.FC<FloatingWindowProps> = ({
   closeButtonAriaLabel = "Close",
   closeOnEscape = true,
   draggable = true,
+  anchorRect,
 }) => {
   const [isCloseHovered, setIsCloseHovered] = useState(false);
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -70,6 +74,48 @@ export const FloatingWindow: React.FC<FloatingWindowProps> = ({
       default:
         return { bottom: o, right: o };
     }
+  })();
+
+  const autoTopLeft: { top: number; left: number } | null = (() => {
+    if (position !== "auto" || !anchorRect) return null;
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+    const gap = offset;
+    const preferBottom = anchorRect.top < vh / 2;
+    const preferRight = anchorRect.left > vw / 2;
+    const verticalOrder = preferBottom ? ["bottom", "top"] : ["top", "bottom"] as const;
+    const horizontalOrder = preferRight ? ["right", "left"] : ["left", "right"] as const;
+
+    const candidates: Array<"top-left" | "top-right" | "bottom-left" | "bottom-right"> = [
+      `${verticalOrder[0]}-${horizontalOrder[0]}` as any,
+      `${verticalOrder[0]}-${horizontalOrder[1]}` as any,
+      `${verticalOrder[1]}-${horizontalOrder[0]}` as any,
+      `${verticalOrder[1]}-${horizontalOrder[1]}` as any,
+    ];
+
+    for (const c of candidates) {
+      let top = 0;
+      let left = 0;
+      if (c === "bottom-right") {
+        top = anchorRect.bottom + gap;
+        left = anchorRect.right - width;
+      } else if (c === "bottom-left") {
+        top = anchorRect.bottom + gap;
+        left = anchorRect.left;
+      } else if (c === "top-right") {
+        top = anchorRect.top - height - gap;
+        left = anchorRect.right - width;
+      } else {
+        top = anchorRect.top - height - gap;
+        left = anchorRect.left;
+      }
+      const fits = top >= 0 && left >= 0 && top + height <= vh && left + width <= vw;
+      if (fits) return { top, left };
+    }
+    // Fallback: clamp bottom-right relative to anchor
+    let top = Math.min(Math.max(anchorRect.bottom + gap, 0), vh - height);
+    let left = Math.min(Math.max(anchorRect.right - width, 0), vw - width);
+    return { top, left };
   })();
 
   const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
@@ -104,7 +150,11 @@ export const FloatingWindow: React.FC<FloatingWindowProps> = ({
       className={className}
       style={{
         position: "fixed",
-        ...(dragTopLeft ? { top: dragTopLeft.top, left: dragTopLeft.left } : edgeStyle),
+        ...(dragTopLeft
+          ? { top: dragTopLeft.top, left: dragTopLeft.left }
+          : autoTopLeft
+          ? { top: autoTopLeft.top, left: autoTopLeft.left }
+          : edgeStyle),
         width,
         height,
         minWidth,

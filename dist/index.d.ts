@@ -1,11 +1,12 @@
 import React from 'react';
 
 type FloatingWindowCorner = "top-left" | "top-right" | "bottom-left" | "bottom-right";
+type FloatingWindowPosition = FloatingWindowCorner | "auto";
 type FloatingWindowProps = {
     children: React.ReactNode;
     title?: React.ReactNode;
     onClose?: () => void;
-    position?: FloatingWindowCorner;
+    position?: FloatingWindowPosition;
     width?: number;
     height?: number;
     minWidth?: number;
@@ -19,6 +20,14 @@ type FloatingWindowProps = {
     closeButtonAriaLabel?: string;
     closeOnEscape?: boolean;
     draggable?: boolean;
+    anchorRect?: {
+        top: number;
+        left: number;
+        right: number;
+        bottom: number;
+        width: number;
+        height: number;
+    } | null;
 };
 declare const FloatingWindow: React.FC<FloatingWindowProps>;
 
@@ -60,4 +69,4 @@ type DefaultChatbotProps = {
 };
 declare const DefaultChatbot: React.FC<DefaultChatbotProps>;
 
-export { ChatEnabled, type ChatEnabledProps, DefaultChatbot, type DefaultChatbotProps, FloatingWindow, type FloatingWindowCorner, type FloatingWindowProps };
+export { ChatEnabled, type ChatEnabledProps, DefaultChatbot, type DefaultChatbotProps, FloatingWindow, type FloatingWindowCorner, type FloatingWindowPosition, type FloatingWindowProps };

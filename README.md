@@ -112,7 +112,7 @@ Note: In JSX you must use `<ChatEnabled />` (PascalCase). A lower-cased alias is
 </ChatEnabled>
 ```
 
-`windowProps` mirrors `FloatingWindow` props: `title`, `position`, `width`, `height`, `minWidth`, `minHeight`, `offset`, `zIndex`, `className`, `style`, `headerClassName`, `bodyClassName`, `closeButtonAriaLabel`, `closeOnEscape`, and `onClose`.
+`windowProps` mirrors `FloatingWindow` props: `title`, `position` (supports `auto`), `width`, `height`, `minWidth`, `minHeight`, `offset`, `zIndex`, `className`, `style`, `headerClassName`, `bodyClassName`, `closeButtonAriaLabel`, `closeOnEscape`, `onClose`, and `draggable` (defaults to `true`). With `position="auto"`, the window positions near the trigger button and stays fully within the viewport.
 
 ### Default chatbot (fallback)
 
