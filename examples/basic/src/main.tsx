@@ -56,6 +56,15 @@ function App() {
             <div className="card">Open window</div>
           </ChatEnabled>
         </div>
+        <div>
+          <h3>Floating window with default chatbot</h3>
+          <ChatEnabled
+            openWindowOnClick
+            windowProps={{ title: "Chat (Left)", position: "bottom-left", width: 320, height: 420 }}
+          >
+            <div className="card">Open window (left)</div>
+          </ChatEnabled>
+        </div>
       </div>
     </div>
   );

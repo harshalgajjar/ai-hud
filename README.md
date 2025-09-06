@@ -114,6 +114,29 @@ Note: In JSX you must use `<ChatEnabled />` (PascalCase). A lower-cased alias is
 
 `windowProps` mirrors `FloatingWindow` props: `title`, `position`, `width`, `height`, `minWidth`, `minHeight`, `offset`, `zIndex`, `className`, `style`, `headerClassName`, `bodyClassName`, `closeButtonAriaLabel`, `closeOnEscape`, and `onClose`.
 
+### Default chatbot (fallback)
+
+If you set `openWindowOnClick` and do not pass `windowContent`, `ChatEnabled` shows a built-in default chatbot with:
+- **message history**
+- **text input**
+- **multiple image upload previews**
+- **OpenAI chat completion** call using a placeholder API key
+
+Replace the placeholder key in your app by wrapping or overriding the `DefaultChatbot` if needed. Quick start:
+
+```tsx
+<ChatEnabled
+  openWindowOnClick
+  windowProps={{ title: 'Chat', position: 'bottom-right', width: 360, height: 480 }}
+>
+  <div style={{ width: 280, height: 160, background: '#f3f4f6', borderRadius: 12 }} />
+</ChatEnabled>
+```
+
+Notes:
+- The default chatbot uses `gpt-4o-mini` and `REPLACE_WITH_YOUR_OPENAI_API_KEY`. Bring your own key.
+- To customize, provide `windowContent` with your own UI, or import and render `DefaultChatbot` directly with your own props.
+
 ### Local development
 
 This repo includes a minimal Vite example for development:

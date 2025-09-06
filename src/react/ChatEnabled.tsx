@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from "react";
 import { FloatingWindow, FloatingWindowProps } from "./FloatingWindow";
+import { DefaultChatbot } from "./DefaultChatbot";
 
 export type ChatEnabledTrigger = "hover" | "focus" | "always" | "manual";
 
@@ -169,7 +170,9 @@ export const ChatEnabled = React.forwardRef<HTMLButtonElement, ChatEnabledProps>
               setIsWindowOpen(false);
             }}
           >
-            {windowContent}
+            {windowContent ?? (
+              <DefaultChatbot />
+            )}
           </FloatingWindow>
         )}
       </div>

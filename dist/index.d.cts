@@ -49,4 +49,14 @@ type ChatEnabledProps = {
 };
 declare const ChatEnabled: React.ForwardRefExoticComponent<ChatEnabledProps & React.RefAttributes<HTMLButtonElement>>;
 
-export { ChatEnabled, type ChatEnabledProps, FloatingWindow, type FloatingWindowCorner, type FloatingWindowProps };
+type DefaultChatbotProps = {
+    model?: string;
+    placeholderApiKey?: string;
+    systemPrompt?: string;
+    welcome?: string;
+    className?: string;
+    style?: React.CSSProperties;
+};
+declare const DefaultChatbot: React.FC<DefaultChatbotProps>;
+
+export { ChatEnabled, type ChatEnabledProps, DefaultChatbot, type DefaultChatbotProps, FloatingWindow, type FloatingWindowCorner, type FloatingWindowProps };
