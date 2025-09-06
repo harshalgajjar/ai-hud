@@ -44,11 +44,11 @@ function App() {
           <button onClick={() => setApiKey("")} className="btn">Clear</button>
         </div>
       </div>
-      <div style={{ marginTop: 8, marginBottom: 8, display: "flex", gap: 0, alignItems: "flex-start", flexWrap: "wrap" }}>
+      <div style={{ borderTop: "1px solid #e5e7eb", paddingTop: 8, marginTop: 8, marginBottom: 8, display: "flex", gap: 0, alignItems: "flex-start", flexWrap: "wrap" }}>
         <div style={{ width: "150px" }}>
           <h3>Clear</h3>
         </div>
-        <div style={{ marginTop: 8, display: "flex", gap: 8, flexWrap: "wrap" }}>
+        <div style={{ marginTop: 8, display: "flex", flexWrap: "wrap" }}>
           <button onClick={() => clearConversation("example-left")} className="btn">Clear "DefaultChatbot"</button>
           <button onClick={() => clearConversation("example-auto")} className="btn">Clear "DefaultChatbot with auto position"</button>
           <button onClick={() => clearConversation("example-context")} className="btn">Clear "DefaultChatbot with context"</button>
@@ -57,11 +57,11 @@ function App() {
           <button onClick={() => clearAllConversations()} className="btn btn-danger">Clear all conversations</button>
         </div>
       </div>
-      <div style={{ marginTop: 8, marginBottom: 8, display: "flex", gap: 24, alignItems: "flex-start", flexWrap: "wrap" }}>
+      <div style={{ borderTop: "1px solid #e5e7eb", paddingTop: 8, marginTop: 8, marginBottom: 8, display: "flex", gap: 24, alignItems: "flex-start", flexWrap: "wrap" }}>
         <div style={{ width: "150px" }}>
           <h2>Button</h2>
         </div>
-        <div>
+        <div className="example-container">
           <h3>Hover (default)</h3>
           <ChatEnabled onClick={() => console.log("Chat clicked (hover)")}
             position="top-right"
@@ -70,7 +70,7 @@ function App() {
             <div className="card">Hover me</div>
           </ChatEnabled>
         </div>
-        <div>
+        <div className="example-container">
           <h3>Always visible</h3>
           <ChatEnabled trigger="always" buttonSize={44} zIndex={20}
             onClick={() => console.log("Chat clicked (always)")}
@@ -78,7 +78,7 @@ function App() {
             <div className="card">Always visible</div>
           </ChatEnabled>
         </div>
-        <div>
+        <div className="example-container">
           <h3>Custom button</h3>
           <ChatEnabled
             renderButton={(btn) => (
@@ -94,11 +94,11 @@ function App() {
         </div>
       </div>
 
-      <div style={{ marginTop: 8, marginBottom: 8, display: "flex", gap: 24, alignItems: "flex-start", flexWrap: "wrap" }}>
+      <div style={{ borderTop: "1px solid #e5e7eb", paddingTop: 8, marginTop: 8, marginBottom: 8, display: "flex", gap: 24, alignItems: "flex-start", flexWrap: "wrap" }}>
         <div style={{ width: "150px" }}>
           <h2>Window</h2>
         </div>
-        <div>
+        <div className="example-container">
           <h3>Floating window</h3>
           <ChatEnabled
             openWindowOnClick
@@ -115,7 +115,7 @@ function App() {
             <div className="card">Open window</div>
           </ChatEnabled>
         </div>
-        <div>
+        <div className="example-container">
           <h3>DefaultChatbot</h3>
           <ChatEnabled
             openWindowOnClick
@@ -127,7 +127,7 @@ function App() {
             </div>
           </ChatEnabled>
         </div>
-        <div>
+        <div className="example-container">
           <h3>DefaultChatbot with auto position</h3>
           <ChatEnabled
             openWindowOnClick
@@ -137,7 +137,7 @@ function App() {
             <div className="card">Open window<br />(remembers conversation)</div>
           </ChatEnabled>
         </div>
-        <div>
+        <div className="example-container">
           <h3>DefaultChatbot without conversationId</h3>
           <ChatEnabled
             openWindowOnClick
@@ -151,11 +151,11 @@ function App() {
         </div>
       </div>
 
-      <div style={{ marginTop: 8, marginBottom: 8, display: "flex", gap: 24, alignItems: "flex-start", flexWrap: "wrap" }}>
+      <div style={{ borderTop: "1px solid #e5e7eb", paddingTop: 8, marginTop: 8, marginBottom: 8, display: "flex", gap: 24, alignItems: "flex-start", flexWrap: "wrap" }}>
         <div style={{ width: "150px" }}>
           <h2>Context</h2>
         </div>
-        <div>
+        <div className="example-container">
           <h3>DefaultChatbot with context</h3>
           <ChatEnabled
             openWindowOnClick
@@ -176,21 +176,22 @@ function App() {
             </div>
           </ChatEnabled>
         </div>
-        <div>
+        <div className="example-container">
           <h3>DefaultChatbot with visual context</h3>
           <ChatEnabled
             openWindowOnClick
+            position="top-left"
             windowProps={{ title: "Visual context (as image)", position: "auto", width: 360, height: 420, sendComponentImageAsContext: true }}
             windowContent={<DefaultChatbot conversationId="example-red" welcome="I can see the component's content, ask me anything about it." inputValue="Which number is in red color?" placeholderApiKey={apiKey} />}
           >
-            <div className="card">
+            {/* <div className="card"> */}
               <span>
                 24 and <span style={{ color: "#ef4444", fontWeight: 600 }}>18</span> are my favorite numbers.
               </span>
-            </div>
+            {/* </div> */}
           </ChatEnabled>
         </div>
-        <div>
+        <div className="example-container">
           <h3>DefaultChatbot with visual context</h3>
           <ChatEnabled
             openWindowOnClick
