@@ -165,7 +165,7 @@ DefaultChatbot props (commonly used):
 - **systemPrompt?**: system instruction string
 - **welcome?**: first assistant message in a new conversation
 - **model?**: OpenAI model id (default: gpt-4o-mini)
-- **placeholderApiKey?**: replace with your real API key
+- **placeholderApiKey?**: optionally pass an API key (for quick demos). In production, prefer a server proxy. You can also set a global `AI_HUD_OPENAI_API_KEY` (e.g., `window.AI_HUD_OPENAI_API_KEY = 'sk-...'`) or define `AI_HUD_OPENAI_API_KEY` in process env during build.
 
 You can programmatically clear conversations:
 

@@ -19,7 +19,7 @@ type OpenAIMessage =
 
 export type DefaultChatbotProps = {
   model?: string; // OpenAI model id with vision support
-  placeholderApiKey?: string; // placeholder key; user will replace
+  placeholderApiKey?: string; // optional explicit key (prefer server proxy in production)
   systemPrompt?: string;
   welcome?: string;
   className?: string;
@@ -27,6 +27,8 @@ export type DefaultChatbotProps = {
   conversationId?: string | null; // when null/undefined, a new id is generated per mount
   context?: unknown; // arbitrary JSON-like object passed to the model as system context
   contextImages?: string[]; // optional images to prepend as context (data URLs or https URLs)
+  inputPlaceholder?: string; // placeholder text for the input box
+  inputValue?: string; // externally controlled input value
 };
 
 const OPENAI_API_URL = "https://api.openai.com/v1/chat/completions";
@@ -42,7 +44,7 @@ async function fileToDataUrl(file: File): Promise<string> {
 
 export const DefaultChatbot: React.FC<DefaultChatbotProps> = ({
   model = "gpt-4o-mini",
-  placeholderApiKey = "REPLACE_WITH_YOUR_OPENAI_API_KEY",
+  placeholderApiKey,
   systemPrompt = "You are a helpful assistant.",
   welcome = "Hi! How can I help you today?",
   className,
@@ -50,7 +52,26 @@ export const DefaultChatbot: React.FC<DefaultChatbotProps> = ({
   conversationId,
   context,
   contextImages,
+  inputPlaceholder,
+  inputValue,
 }) => {
+  const resolveApiKey = (explicit?: string): string | null => {
+    if (explicit && explicit !== "REPLACE_WITH_YOUR_OPENAI_API_KEY") return explicit;
+    try {
+      const g = (globalThis as any) || {};
+      if (typeof g.AI_HUD_OPENAI_API_KEY === "string" && g.AI_HUD_OPENAI_API_KEY) return g.AI_HUD_OPENAI_API_KEY;
+      if (typeof g.__AI_HUD_OPENAI_API_KEY__ === "string" && g.__AI_HUD_OPENAI_API_KEY__) return g.__AI_HUD_OPENAI_API_KEY__;
+    } catch {}
+    try {
+      const p = (globalThis as any).process;
+      if (p && p.env && typeof p.env.AI_HUD_OPENAI_API_KEY === "string") {
+        return p.env.AI_HUD_OPENAI_API_KEY as string;
+      }
+    } catch {}
+    return null;
+  };
+
+  const apiKey = resolveApiKey(placeholderApiKey);
   const generatedIdRef = useRef<string | null>(null);
   if (!conversationId && !generatedIdRef.current) {
     const gen = ((): string => {
@@ -73,7 +94,9 @@ export const DefaultChatbot: React.FC<DefaultChatbotProps> = ({
     } catch {}
     return [{ id: "welcome", role: "assistant", text: welcome }];
   });
-  const [input, setInput] = useState("");
+  const [input, setInput] = useState<string>(() =>
+    typeof inputValue === "string" ? inputValue : ""
+  );
   const [pendingImages, setPendingImages] = useState<string[]>([]);
   const [isSending, setIsSending] = useState(false);
   const endRef = useRef<HTMLDivElement | null>(null);
@@ -182,7 +205,7 @@ export const DefaultChatbot: React.FC<DefaultChatbotProps> = ({
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${placeholderApiKey}`,
+          ...(apiKey ? { Authorization: `Bearer ${apiKey}` } : {}),
         },
         body: JSON.stringify({
           model,
@@ -302,7 +325,7 @@ export const DefaultChatbot: React.FC<DefaultChatbotProps> = ({
           <input
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            placeholder="Type a message..."
+            placeholder={inputPlaceholder ?? "Type a message..."}
             onKeyDown={(e) => {
               if (e.key === "Enter" && !e.shiftKey) {
                 e.preventDefault();
