@@ -161,6 +161,7 @@ import { ChatEnabled, DefaultChatbot } from '@ai-hud/chat-enabled';
 DefaultChatbot props (commonly used):
 - **conversationId?**: string or null; when omitted, a new id is generated per mount
 - **context?**: any JSON-serializable object; included as a system message for additional grounding/context
+- **contextImages?**: string[] of HTTPS or data: URLs; images are sent with the first user message as vision context. Useful for screenshots/plots. When `sendComponentImageAsContext` is enabled on `windowProps`, the captured image is appended to this list.
 - **systemPrompt?**: system instruction string
 - **welcome?**: first assistant message in a new conversation
 - **model?**: OpenAI model id (default: gpt-4o-mini)
@@ -176,6 +177,61 @@ clearAllConversations();
 ```
 
 Note: If you omit `conversationId`, an anonymous conversation is created and its history is automatically cleared from localStorage when the window closes.
+
+### Send component image as context
+
+You can automatically attach a screenshot of the wrapped child as visual context for the chatbot. Enable this by setting an option on `windowProps`.
+
+```tsx
+import { ChatEnabled, DefaultChatbot } from '@ai-hud/chat-enabled';
+
+<ChatEnabled
+  openWindowOnClick
+  windowProps={{
+    title: 'Ask about the component',
+    position: 'auto',
+    width: 360,
+    height: 420,
+    sendComponentImageAsContext: true,
+  }}
+  windowContent={
+    <DefaultChatbot
+      conversationId="example-red"
+      welcome="Try asking: What is in red color?"
+    />
+  }
+>
+  <div style={{ width: 280, background: '#f3f4f6', borderRadius: 12, padding: 12 }}>
+    This sentence has a <span style={{ color: '#ef4444', fontWeight: 600 }}>RED</span> word.
+  </div>
+</ChatEnabled>
+```
+
+How it works:
+- When the window opens, the child is captured with a lightweight DOM screenshot and injected into the chatbot as `contextImages`.
+- If capture isn’t ready yet, a short placeholder is shown; then the image is attached automatically.
+
+Notes:
+- The capture uses an inline DOM-to-image approach; external images must be CORS-enabled to avoid a tainted canvas.
+- For best OCR, the capture is scaled up to improve legibility.
+- If you already pass `contextImages` to `DefaultChatbot`, the captured image is appended.
+
+You can also provide `contextImages` directly:
+
+```tsx
+<ChatEnabled openWindowOnClick windowProps={{ title: 'With images', position: 'auto', width: 360, height: 420 }}
+  windowContent={
+    <DefaultChatbot
+      conversationId="example-images"
+      contextImages={[
+        'data:image/png;base64,iVBORw0K...', // or an https URL to a hosted image
+      ]}
+    />
+  }
+>
+  <div style={{ width: 280, height: 160, background: '#f3f4f6', borderRadius: 12 }} />
+</ChatEnabled>
+```
 
 ### Local development
 

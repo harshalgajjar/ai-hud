@@ -1,4 +1,5 @@
-import React, { useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
+import html2canvas from "html2canvas";
 import { FloatingWindow, FloatingWindowProps } from "./FloatingWindow";
 
 export type ChatEnabledTrigger = "hover" | "focus" | "always" | "manual";
@@ -28,7 +29,7 @@ export type ChatEnabledProps = {
   ) => React.ReactNode;
   // Optional built-in floating window support
   openWindowOnClick?: boolean; // default false
-  windowProps?: Omit<FloatingWindowProps, "children">;
+  windowProps?: (Omit<FloatingWindowProps, "children"> & { sendComponentImageAsContext?: boolean });
   windowContent?: React.ReactNode; // custom content; if absent, shows nothing
 };
 
@@ -61,6 +62,9 @@ export const ChatEnabled = React.forwardRef<HTMLButtonElement, ChatEnabledProps>
     const [isHoveredOrFocused, setIsHoveredOrFocused] = useState(false);
     const [isWindowOpen, setIsWindowOpen] = useState(false);
     const internalButtonRef = useRef<HTMLButtonElement | null>(null);
+    const containerRef = useRef<HTMLDivElement | null>(null);
+    const captureRef = useRef<HTMLDivElement | null>(null);
+    const [capturedImage, setCapturedImage] = useState<string | null>(null);
 
     const resolvedTrigger: ChatEnabledTrigger = trigger ?? "hover";
 
@@ -97,6 +101,32 @@ export const ChatEnabled = React.forwardRef<HTMLButtonElement, ChatEnabledProps>
       onFocus: resolvedTrigger === "focus" ? () => { setIsHoveredOrFocused(true); notifyOpenChange(true); } : undefined,
       onBlur: resolvedTrigger === "focus" ? () => { setIsHoveredOrFocused(false); notifyOpenChange(false); } : undefined,
     } as const;
+    const sendImageFlag = Boolean((windowProps as any)?.sendComponentImageAsContext);
+
+    useEffect(() => {
+      const doCapture = async () => {
+        if (!sendImageFlag) return;
+        const target = captureRef.current;
+        if (!target) return;
+        try {
+          // Wait a tick to ensure layout has settled
+          await new Promise((r) => requestAnimationFrame(() => setTimeout(r, 50)));
+          const canvas = await html2canvas(target, {
+            useCORS: true,
+            backgroundColor: null,
+            scale: Math.min(2, Math.max(1, Math.ceil((target as HTMLElement).offsetWidth / 280))),
+          });
+          const dataUrl = canvas.toDataURL("image/png", 0.92);
+          setCapturedImage(dataUrl);
+        } catch {
+          // ignore capture errors
+        }
+      };
+      if (isWindowOpen) {
+        void doCapture();
+      }
+    }, [isWindowOpen, sendImageFlag]);
+
 
     const setMergedRef = (el: HTMLButtonElement | null) => {
       internalButtonRef.current = el;
@@ -148,8 +178,11 @@ export const ChatEnabled = React.forwardRef<HTMLButtonElement, ChatEnabledProps>
         className={className}
         style={{ position: "relative", display: "inline-block", ...containerStyle }}
         {...containerEventHandlers}
+        ref={containerRef}
       >
-        {children}
+        <div ref={captureRef} style={{ display: "inline-block" }}>
+          {children}
+        </div>
         {renderButton ? (
           renderButton(buttonProps)
         ) : (
@@ -177,6 +210,7 @@ export const ChatEnabled = React.forwardRef<HTMLButtonElement, ChatEnabledProps>
             onClose={() => {
               windowProps?.onClose?.();
               setIsWindowOpen(false);
+              setCapturedImage(null);
             }}
             anchorRect={
               (windowProps as FloatingWindowProps | undefined)?.anchorRect ??
@@ -185,7 +219,27 @@ export const ChatEnabled = React.forwardRef<HTMLButtonElement, ChatEnabledProps>
                 : null)
             }
           >
-            {windowContent}
+            {(() => {
+              if (sendImageFlag) {
+                if (!capturedImage) {
+                  return (
+                    <div style={{ padding: 12, color: "#6b7280", fontSize: 14 }}>
+                      Loading...
+                    </div>
+                  );
+                }
+                if (React.isValidElement(windowContent)) {
+                  const prev = (windowContent.props as any)?.contextImages as string[] | undefined;
+                  const merged = [...(prev ?? []), capturedImage];
+                  try {
+                    return React.cloneElement(windowContent as any, { contextImages: merged });
+                  } catch {
+                    return windowContent;
+                  }
+                }
+              }
+              return windowContent;
+            })()}
           </FloatingWindow>
         )}
       </div>

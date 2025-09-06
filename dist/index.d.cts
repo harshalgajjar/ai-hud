@@ -54,7 +54,9 @@ type ChatEnabledProps = {
         ref: React.Ref<HTMLButtonElement>;
     }) => React.ReactNode;
     openWindowOnClick?: boolean;
-    windowProps?: Omit<FloatingWindowProps, "children">;
+    windowProps?: (Omit<FloatingWindowProps, "children"> & {
+        sendComponentImageAsContext?: boolean;
+    });
     windowContent?: React.ReactNode;
 };
 declare const ChatEnabled: React.ForwardRefExoticComponent<ChatEnabledProps & React.RefAttributes<HTMLButtonElement>>;
@@ -68,6 +70,7 @@ type DefaultChatbotProps = {
     style?: React.CSSProperties;
     conversationId?: string | null;
     context?: unknown;
+    contextImages?: string[];
 };
 declare const DefaultChatbot: React.FC<DefaultChatbotProps>;
 

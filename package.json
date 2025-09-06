@@ -28,6 +28,9 @@
     "dist"
   ],
   "sideEffects": false,
+  "dependencies": {
+    "html2canvas": "^1.4.1"
+  },
   "peerDependencies": {
     "react": ">=17",
     "react-dom": ">=17"

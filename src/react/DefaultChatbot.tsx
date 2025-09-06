@@ -26,6 +26,7 @@ export type DefaultChatbotProps = {
   style?: React.CSSProperties;
   conversationId?: string | null; // when null/undefined, a new id is generated per mount
   context?: unknown; // arbitrary JSON-like object passed to the model as system context
+  contextImages?: string[]; // optional images to prepend as context (data URLs or https URLs)
 };
 
 const OPENAI_API_URL = "https://api.openai.com/v1/chat/completions";
@@ -48,6 +49,7 @@ export const DefaultChatbot: React.FC<DefaultChatbotProps> = ({
   style,
   conversationId,
   context,
+  contextImages,
 }) => {
   const generatedIdRef = useRef<string | null>(null);
   if (!conversationId && !generatedIdRef.current) {
@@ -111,6 +113,18 @@ export const DefaultChatbot: React.FC<DefaultChatbotProps> = ({
           serialized = String(context);
         }
         result.push({ role: "system", content: `Context: ${serialized}` });
+      }
+      if (Array.isArray(contextImages) && contextImages.length > 0) {
+        // Ensure data URLs are converted to https if needed (OpenAI requires hosted URLs in some models)
+        // Many vision models now accept data URLs; keep as-is but filter invalid ones.
+        const valid = contextImages.filter((u) => typeof u === "string" && (u.startsWith("data:image/") || u.startsWith("http")));
+        if (valid.length > 0) {
+          const parts: UserContentPart[] = [
+            { type: "text", text: "Context images" },
+            ...valid.map<UserContentPart>((url) => ({ type: "image_url", image_url: { url } })),
+          ];
+          result.push({ role: "user", content: parts });
+        }
       }
       for (const m of uiMessages) {
         if (m.role === "assistant") {

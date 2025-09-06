@@ -101,6 +101,20 @@ function App() {
           </ChatEnabled>
         </div>
         <div>
+          <h3>Component image context (red text)</h3>
+          <ChatEnabled
+            openWindowOnClick
+            windowProps={{ title: "Ask about the red word", position: "auto", width: 360, height: 420, sendComponentImageAsContext: true }}
+            windowContent={<DefaultChatbot conversationId="example-red" welcome="Try asking: What is in red color?" />}
+          >
+            <div className="card">
+              <span>
+                24 and <span style={{ color: "#ef4444", fontWeight: 600 }}>18</span> are my favorite numbers.
+              </span>
+            </div>
+          </ChatEnabled>
+        </div>
+        <div>
           <h3>Floating window with default chatbot without conversationId</h3>
           <ChatEnabled
             openWindowOnClick
