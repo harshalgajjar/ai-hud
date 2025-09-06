@@ -1,12 +1,17 @@
 import React from "react";
 import { createRoot } from "react-dom/client";
-import { ChatEnabled } from "@ai-hud/chat-enabled";
+import { ChatEnabled, DefaultChatbot, clearAllConversations, clearConversation } from "@ai-hud/chat-enabled";
 
 function App() {
   return (
     <div>
-      <h1>ChatEnabled basic example</h1>
+      <h1><code>&lt;ChatEnabled&gt;</code> examples</h1>
       <p>Hover the card to see the chat button. Click logs to console.</p>
+      <div style={{ marginTop: 8, display: "flex", gap: 8, flexWrap: "wrap" }}>
+        <button onClick={() => clearConversation("example-left")} className="btn">Clear "Floating window with default chatbot"</button>
+        <button onClick={() => clearConversation("example-auto")} className="btn">Clear "Floating window (auto position) with DefaultChatbot"</button>
+        <button onClick={() => clearAllConversations()} className="btn btn-danger">Clear all</button>
+      </div>
       <div style={{ marginTop: 16, display: "flex", gap: 24, alignItems: "flex-start", flexWrap: "wrap" }}>
         <div>
           <h3>Hover (default)</h3>
@@ -61,17 +66,33 @@ function App() {
           <ChatEnabled
             openWindowOnClick
             windowProps={{ title: "Chat (Left and draggable)", position: "bottom-left", width: 360, height: 420 }}
+            windowContent={<DefaultChatbot conversationId="example-left" />}
           >
             <div className="card">Open window (left)</div>
+            
+            {/* Provide DefaultChatbot explicitly via windowContent */}
           </ChatEnabled>
         </div>
         <div>
-          <h3>Floating window (auto position)</h3>
+          <h3>Floating window (auto position) with DefaultChatbot</h3>
           <ChatEnabled
             openWindowOnClick
             windowProps={{ title: "Chat (Auto)", position: "auto", width: 360, height: 420 }}
+            windowContent={<DefaultChatbot conversationId="example-auto" />}
           >
             <div className="card">Open window (auto)</div>
+          </ChatEnabled>
+        </div>
+        <div>
+          <h3>Floating window with default chatbot without conversationId</h3>
+          <ChatEnabled
+            openWindowOnClick
+            windowProps={{ title: "Chat (Left and draggable)", position: "bottom-left", width: 360, height: 420 }}
+            windowContent={<DefaultChatbot />}
+          >
+            <div className="card">Open window (left)</div>
+            
+            {/* Provide DefaultChatbot explicitly via windowContent */}
           </ChatEnabled>
         </div>
       </div>

@@ -1,4 +1,5 @@
-import React, { useCallback, useMemo, useRef, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { CHAT_STORAGE_PREFIX } from "./chatStorage";
 
 type UiMessage = {
   id: string;
@@ -23,6 +24,7 @@ export type DefaultChatbotProps = {
   welcome?: string;
   className?: string;
   style?: React.CSSProperties;
+  conversationId?: string | null; // when null/undefined, a new id is generated per mount
 };
 
 const OPENAI_API_URL = "https://api.openai.com/v1/chat/completions";
@@ -43,10 +45,30 @@ export const DefaultChatbot: React.FC<DefaultChatbotProps> = ({
   welcome = "Hi! How can I help you today?",
   className,
   style,
+  conversationId,
 }) => {
-  const [messages, setMessages] = useState<UiMessage[]>([
-    { id: "welcome", role: "assistant", text: welcome },
-  ]);
+  const generatedIdRef = useRef<string | null>(null);
+  if (!conversationId && !generatedIdRef.current) {
+    const gen = ((): string => {
+      try {
+        if (typeof crypto !== "undefined" && (crypto as any).randomUUID) return (crypto as any).randomUUID();
+      } catch {}
+      return `conv_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`;
+    })();
+    generatedIdRef.current = gen;
+  }
+  const effectiveConversationId = conversationId ?? generatedIdRef.current!;
+  const storageKey = `${CHAT_STORAGE_PREFIX}${effectiveConversationId}`;
+  const [messages, setMessages] = useState<UiMessage[]>(() => {
+    try {
+      const raw = typeof window !== "undefined" ? window.localStorage.getItem(storageKey) : null;
+      if (raw) {
+        const parsed = JSON.parse(raw) as UiMessage[];
+        if (Array.isArray(parsed)) return parsed;
+      }
+    } catch {}
+    return [{ id: "welcome", role: "assistant", text: welcome }];
+  });
   const [input, setInput] = useState("");
   const [pendingImages, setPendingImages] = useState<string[]>([]);
   const [isSending, setIsSending] = useState(false);
@@ -167,6 +189,29 @@ export const DefaultChatbot: React.FC<DefaultChatbotProps> = ({
   const canSend = useMemo(() => {
     return (input.trim().length > 0 || pendingImages.length > 0) && !isSending;
   }, [input, pendingImages.length, isSending]);
+
+  // Persist conversation per conversationId
+  useEffect(() => {
+    try {
+      if (typeof window !== "undefined") {
+        window.localStorage.setItem(storageKey, JSON.stringify(messages));
+      }
+    } catch {}
+  }, [messages, storageKey]);
+
+  // If no explicit conversationId was provided (auto-generated),
+  // clear storage on unmount to avoid accumulating transient threads.
+  useEffect(() => {
+    return () => {
+      if (!conversationId) {
+        try {
+          if (typeof window !== "undefined") {
+            window.localStorage.removeItem(storageKey);
+          }
+        } catch {}
+      }
+    };
+  }, [conversationId, storageKey]);
 
   return (
     <div className={className} style={{ display: "flex", flexDirection: "column", height: "100%", ...style }}>

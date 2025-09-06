@@ -7,6 +7,13 @@
     <style>
       body { font-family: ui-sans-serif, system-ui, -apple-system; padding: 32px; }
       .card { width: 280px; height: 180px; background: #f3f4f6; border-radius: 12px; display:flex; align-items:center; justify-content:center; position:relative; }
+      .btn { border: 1px solid #e5e7eb; border-radius: 8px; padding: 6px 10px; background: white; cursor: pointer; transition: background-color .15s ease, transform .05s ease, border-color .15s ease, color .15s ease; }
+      .btn:hover { background: #f3f4f6; }
+      .btn:active { background: #e5e7eb; transform: translateY(1px); }
+      .btn:focus-visible { outline: 2px solid #93c5fd; outline-offset: 2px; }
+      .btn-danger { border-color: #fecaca; color: #b91c1c; }
+      .btn-danger:hover { background: #fee2e2; }
+      .btn-danger:active { background: #fecaca; }
     </style>
   </head>
   <body>

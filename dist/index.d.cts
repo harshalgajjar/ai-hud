@@ -66,7 +66,13 @@ type DefaultChatbotProps = {
     welcome?: string;
     className?: string;
     style?: React.CSSProperties;
+    conversationId?: string | null;
 };
 declare const DefaultChatbot: React.FC<DefaultChatbotProps>;
 
-export { ChatEnabled, type ChatEnabledProps, DefaultChatbot, type DefaultChatbotProps, FloatingWindow, type FloatingWindowCorner, type FloatingWindowPosition, type FloatingWindowProps };
+declare const CHAT_STORAGE_PREFIX = "ai-hud:default-chatbot:history:";
+declare function getConversationStorageKey(conversationId: string): string;
+declare function clearConversation(conversationId: string): void;
+declare function clearAllConversations(): void;
+
+export { CHAT_STORAGE_PREFIX, ChatEnabled, type ChatEnabledProps, DefaultChatbot, type DefaultChatbotProps, FloatingWindow, type FloatingWindowCorner, type FloatingWindowPosition, type FloatingWindowProps, clearAllConversations, clearConversation, getConversationStorageKey };

@@ -112,30 +112,62 @@ Note: In JSX you must use `<ChatEnabled />` (PascalCase). A lower-cased alias is
 </ChatEnabled>
 ```
 
-`windowProps` mirrors `FloatingWindow` props: `title`, `position` (supports `auto`), `width`, `height`, `minWidth`, `minHeight`, `offset`, `zIndex`, `className`, `style`, `headerClassName`, `bodyClassName`, `closeButtonAriaLabel`, `closeOnEscape`, `onClose`, and `draggable` (defaults to `true`). With `position="auto"`, the window positions near the trigger button and stays fully within the viewport.
+`windowProps` controls the chat window: `title`, `position` (supports `auto`), `width`, `height`, `minWidth`, `minHeight`, `offset`, `zIndex`, `className`, `style`, `headerClassName`, `bodyClassName`, `closeButtonAriaLabel`, `closeOnEscape`, `onClose`, and `draggable` (defaults to `true`). With `position="auto"`, the window positions near the trigger button and stays fully within the viewport.
 
-### Default chatbot (fallback)
+### Window options (windowProps)
 
-If you set `openWindowOnClick` and do not pass `windowContent`, `ChatEnabled` shows a built-in default chatbot with:
-- **message history**
-- **text input**
-- **multiple image upload previews**
-- **OpenAI chat completion** call using a placeholder API key
+- **title**: Title shown in the window header. Accepts text or a React node.
+- **position**: Where to place the window relative to the trigger.
+  - Values: "top-left" | "top-right" | "bottom-left" | "bottom-right" | "auto"
+  - "auto" tries to place near the trigger and keeps the window fully in the viewport.
+- **width**: Window width in pixels. Default: 360.
+- **height**: Window height in pixels. Default: 480.
+- **minWidth**: Minimum width in pixels. Default: 280.
+- **minHeight**: Minimum height in pixels. Default: 240.
+- **offset**: Pixel gap from screen edges or the trigger when using auto positioning. Default: 16.
+- **zIndex**: Stacking order. Default: 1000.
+- **className**: CSS class for the outer window container.
+- **style**: Inline styles for the outer window container.
+- **headerClassName**: CSS class for the window header.
+- **bodyClassName**: CSS class for the window body/content area.
+- **closeButtonAriaLabel**: Accessible label for the close button. Default: "Close".
+- **closeOnEscape**: Close the window when pressing Escape. Default: true.
+- **onClose()**: Callback fired when the window closes.
+- **draggable**: Allow dragging the window by its header. Default: true.
 
-Replace the placeholder key in your app by wrapping or overriding the `DefaultChatbot` if needed. Quick start:
+### Default chatbot (opt-in)
+
+Use `DefaultChatbot` by passing it via `windowContent`. This is opt-in and not automatic.
 
 ```tsx
+import { ChatEnabled, DefaultChatbot } from '@ai-hud/chat-enabled';
+
 <ChatEnabled
   openWindowOnClick
   windowProps={{ title: 'Chat', position: 'bottom-right', width: 360, height: 480 }}
+  windowContent={<DefaultChatbot />}
 >
   <div style={{ width: 280, height: 160, background: '#f3f4f6', borderRadius: 12 }} />
 </ChatEnabled>
 ```
 
-Notes:
-- The default chatbot uses `gpt-4o-mini` and `REPLACE_WITH_YOUR_OPENAI_API_KEY`. Bring your own key.
-- To customize, provide `windowContent` with your own UI, or import and render `DefaultChatbot` directly with your own props.
+`DefaultChatbot` features:
+- **message history**, **text input**, **multiple image upload previews**
+- calls OpenAI chat completions with a placeholder key (replace with your own)
+ - per-conversation persistence via `conversationId`:
+   - pass a custom `conversationId` to persist/reuse a specific thread
+   - omit it to auto-generate a new id for each mount
+
+You can programmatically clear conversations:
+
+```ts
+import { clearConversation, clearAllConversations } from '@ai-hud/chat-enabled';
+
+clearConversation('example-auto');
+clearAllConversations();
+```
+
+Note: If you omit `conversationId`, an anonymous conversation is created and its history is automatically cleared from localStorage when the window closes.
 
 ### Local development
 

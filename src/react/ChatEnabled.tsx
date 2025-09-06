@@ -1,6 +1,5 @@
 import React, { useMemo, useRef, useState } from "react";
 import { FloatingWindow, FloatingWindowProps } from "./FloatingWindow";
-import { DefaultChatbot } from "./DefaultChatbot";
 
 export type ChatEnabledTrigger = "hover" | "focus" | "always" | "manual";
 
@@ -172,7 +171,7 @@ export const ChatEnabled = React.forwardRef<HTMLButtonElement, ChatEnabledProps>
             )}
           </button>
         )}
-        {openWindowOnClick && isWindowOpen && (
+        {openWindowOnClick && isWindowOpen && windowContent && (
           <FloatingWindow
             {...(windowProps as FloatingWindowProps)}
             onClose={() => {
@@ -186,9 +185,7 @@ export const ChatEnabled = React.forwardRef<HTMLButtonElement, ChatEnabledProps>
                 : null)
             }
           >
-            {windowContent ?? (
-              <DefaultChatbot />
-            )}
+            {windowContent}
           </FloatingWindow>
         )}
       </div>

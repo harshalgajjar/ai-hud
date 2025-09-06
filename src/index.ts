@@ -5,5 +5,6 @@ export type { FloatingWindowProps, FloatingWindowCorner } from "./react/Floating
 export type { FloatingWindowPosition } from "./react/FloatingWindow";
 export { DefaultChatbot } from "./react/DefaultChatbot";
 export type { DefaultChatbotProps } from "./react/DefaultChatbot";
+export { clearConversation, clearAllConversations, getConversationStorageKey, CHAT_STORAGE_PREFIX } from "./react/chatStorage";
 
 
