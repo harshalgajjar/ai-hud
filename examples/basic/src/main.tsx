@@ -169,6 +169,7 @@ function App() {
                     systemPrompt="You are a helpful assistant. Use the provided context when relevant."
                     welcome="Ask me about what context I have."
                     placeholderApiKey={apiKey}
+                    inputValue="What context do you have?"
                   />
                 }
               >
