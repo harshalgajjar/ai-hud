@@ -1,4 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { ChatOpenAI } from "@langchain/openai";
+import { AIMessage, HumanMessage, SystemMessage } from "@langchain/core/messages";
 import { CHAT_STORAGE_PREFIX } from "./chatStorage";
 
 type UiMessage = {
@@ -196,26 +198,31 @@ export const DefaultChatbot: React.FC<DefaultChatbotProps> = ({
     setIsSending(true);
 
     try {
+      // Translate our OpenAI-like structure to LangChain messages
+      const lcMsgs: (SystemMessage | HumanMessage | AIMessage)[] = [];
       const openaiMessages = buildOpenAIMessages(messages, {
         text: userMsg.text || "",
         images: userMsg.images || [],
       });
+      for (const m of openaiMessages) {
+        if (m.role === "system") {
+          lcMsgs.push(new SystemMessage(m.content as string));
+        } else if (m.role === "assistant") {
+          lcMsgs.push(new AIMessage(m.content as string));
+        } else if (m.role === "user") {
+          const c: any = (m as any).content;
+          if (Array.isArray(c)) {
+            // Preserve multimodal structure for vision models
+            lcMsgs.push(new HumanMessage({ content: c } as any));
+          } else {
+            lcMsgs.push(new HumanMessage(m.content as string));
+          }
+        }
+      }
 
-      const res = await fetch(OPENAI_API_URL, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          ...(apiKey ? { Authorization: `Bearer ${apiKey}` } : {}),
-        },
-        body: JSON.stringify({
-          model,
-          messages: openaiMessages,
-          temperature: 0.7,
-        }),
-      });
-      if (!res.ok) throw new Error(`OpenAI error: ${res.status}`);
-      const data = await res.json();
-      const content = data?.choices?.[0]?.message?.content ?? "";
+      const chat = new ChatOpenAI({ modelName: model, temperature: 0.7, apiKey: apiKey ?? undefined });
+      const response = await chat.invoke(lcMsgs);
+      const content = typeof response.content === "string" ? response.content : JSON.stringify(response.content);
       const assistant: UiMessage = {
         id: String(Date.now() + 1),
         role: "assistant",
