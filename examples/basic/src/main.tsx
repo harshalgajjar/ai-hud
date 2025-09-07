@@ -20,9 +20,11 @@ function App() {
   return (
     <div className="container">
       <h1 className="mb-2"><code>&lt;ChatEnabled&gt;</code> examples</h1>
-      <p className="text-muted">Add a chat with button to any/all components</p>
+      <p className="text-muted">Chat with any/all components</p>
       <div className="row gy-3 align-items-start mb-3">
-        <div className="col-12 col-md-2"><h3>Key</h3></div>
+        <div className="col-12 col-md-2">
+          <h3>Key</h3>
+        </div>
         <div className="col-12 col-md">
           <label htmlFor="openai-key" style={{ fontSize: 14, color: "#374151" }}>OpenAI API key:</label>
           <input
@@ -37,7 +39,9 @@ function App() {
         </div>
       </div>
       <div className="row gy-2 align-items-start mb-3">
-        <div className="col-12 col-md-2"><h3>Clear</h3></div>
+        <div className="col-12 col-md-2">
+          <h3>Clear Conversations</h3>
+        </div>
         <div className="col-12 col-md">
           <div className="d-flex flex-wrap gap-2">
             <button onClick={() => clearConversation("example-left")} className="btn btn-outline-secondary">Clear "DefaultChatbot"</button>
@@ -45,12 +49,14 @@ function App() {
             <button onClick={() => clearConversation("example-context")} className="btn btn-outline-secondary">Clear "DefaultChatbot with context"</button>
             <button onClick={() => clearConversation("example-logo")} className="btn btn-outline-secondary">Clear "Visual context (as image) - text"</button>
             <button onClick={() => clearConversation("example-red")} className="btn btn-outline-secondary">Clear "Visual context (as image) - plot"</button>
-            <button onClick={() => clearAllConversations()} className="btn btn-danger">Clear all conversations</button>
+            <button onClick={() => clearAllConversations()} className="btn btn-danger">Clear all</button>
           </div>
         </div>
       </div>
       <div className="row gy-3 align-items-start mb-3">
-        <div className="col-12 col-md-2"><h2>Button</h2></div>
+        <div className="col-12 col-md-2">
+          <h2>Button</h2>
+        </div>
         <div className="col-12 col-md">
           <div className="d-flex flex-row flex-wrap gap-3">
             <div className="example-container">
