@@ -1,173 +1,25 @@
 <!doctype html>
 <html lang="en">
-
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ChatEnabled Example</title>
-  <style>
-    :root {
-      --bg: #fafafa;
-      --fg: #111827;
-      --muted: #6b7280;
-      --border: #e5e7eb;
-    }
-
-    html,
-    body {
-      height: 100%;
-    }
-
-    body {
-      font-family: ui-sans-serif, system-ui, -apple-system;
-      background: var(--bg);
-      color: var(--fg);
-      margin: 0;
-      -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
-    }
-
-    .container {
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 24px;
-    }
-
-    @media (min-width: 768px) {
-      .container {
-        padding: 32px;
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ChatEnabled Example</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <style>
+      body { font-family: ui-sans-serif, system-ui, -apple-system; padding: 32px; }
+      .card { width: 150px; height: 100%; min-height: 100px; background: #f3f4f6; border-radius: 12px; padding: 12px; }
+      /* demo-only container for examples */
+      .example-container {
+        border: 1px solid #e5e7eb;
+        border-radius: 12px;
+        padding: 0px 12px 12px 12px;
       }
-    }
+    </style>
+    <script type="module" crossorigin src="/assets/index-CFFyZY34.js"></script>
+  </head>
+  <body>
+    <div id="root"></div>
+  </body>
+  </html>
 
-    h1 {
-      margin: 0 0 8px 0;
-      letter-spacing: -0.02em;
-    }
 
-    h2 {
-      margin: 0;
-      letter-spacing: -0.01em;
-    }
-
-    h3 {
-      margin: 0 0 8px 0;
-      font-weight: 600;
-    }
-
-    p {
-      color: var(--muted);
-      margin: 0 0 8px 0;
-    }
-
-    .card {
-      width: 100%;
-      min-height: 120px;
-      background: #f3f4f6;
-      border-radius: 12px;
-      padding: 12px;
-      border: 1px solid var(--border);
-    }
-
-    .btn {
-      border: 1px solid #e5e7eb;
-      border-radius: 8px;
-      padding: 6px 10px;
-      background: white;
-      cursor: pointer;
-      transition: background-color .15s ease, transform .05s ease, border-color .15s ease, color .15s ease;
-    }
-
-    .btn:hover {
-      background: #f3f4f6;
-    }
-
-    .btn:active {
-      background: #e5e7eb;
-      transform: translateY(1px);
-    }
-
-    .btn:focus-visible {
-      outline: 2px solid #93c5fd;
-      outline-offset: 2px;
-    }
-
-    .btn-danger {
-      border-color: #fecaca;
-      color: #b91c1c;
-    }
-
-    .btn-danger:hover {
-      background: #fee2e2;
-    }
-
-    .btn-danger:active {
-      background: #fecaca;
-    }
-
-    .section {
-      margin-top: 8px;
-      margin-bottom: 8px;
-      display: flex;
-      gap: 24px;
-      align-items: flex-start;
-      flex-wrap: wrap;
-    }
-
-    .section-title {
-      width: 150px;
-      flex: 0 0 150px;
-    }
-
-    .section-body {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 16px;
-      flex: 1 1 auto;
-    }
-
-    @media (max-width: 1024px) {
-      .section-body {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
-    }
-
-    @media (max-width: 720px) {
-      .section {
-        flex-direction: column;
-      }
-
-      .section-title {
-        width: auto;
-        flex: none;
-        margin-bottom: 4px;
-      }
-
-      .section-body {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    .example-container {
-      border: 1px solid #e5e7eb;
-      border-radius: 12px;
-      padding: 0px 12px 12px 12px;
-    }
-
-    .input {
-      min-width: 0;
-      width: min(100%, 420px);
-      height: 36px;
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 0 10px;
-      background: white;
-    }
-  </style>
-  <script type="module" crossorigin src="/assets/index-BJhYtuFO.js"></script>
-</head>
-
-<body>
-  <div id="root"></div>
-</body>
-
-</html>
