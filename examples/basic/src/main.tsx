@@ -209,6 +209,50 @@ function App() {
           </div>
         </div>
       </div>
+
+      <div className="row gy-3 align-items-start mb-3">
+        <div className="col-12 col-md-2"><h2>Tools</h2></div>
+        <div className="col-12 col-md example-container">
+          <h3>Calculator tool</h3>
+          <ChatEnabled
+            openWindowOnClick
+            windowProps={{ title: "Tools: Calculator", position: "auto", width: 360, height: 420 }}
+            windowContent={
+              <DefaultChatbot
+                conversationId="example-tools-calc"
+                placeholderApiKey={apiKey}
+                systemPrompt="You can use a calculator tool to compute expressions when needed."
+                inputPlaceholder="Ask: what is (23*7 + 42)/5?"
+                inputValue="What is (23*7 + 42)/5?"
+                tools={[
+                  {
+                    type: "function",
+                    name: "calculator",
+                    description: "Evaluate a basic arithmetic expression like '2 + 2 * 3'",
+                    parameters: {
+                      type: "object",
+                      properties: { expression: { type: "string", description: "Math expression to evaluate" } },
+                      required: ["expression"],
+                    },
+                    async invoke(args: any) {
+                      const expr = typeof args === "string" ? args : (args?.expression ?? "");
+                      try {
+                        // eslint-disable-next-line no-new-func
+                        const result = Function(`"use strict"; return (${expr})`)();
+                        return String(result);
+                      } catch (e: any) {
+                        return `calc error: ${e?.message || String(e)}`;
+                      }
+                    },
+                  },
+                ]}
+              />
+            }
+          >
+            <div className="card">Open window (tools)</div>
+          </ChatEnabled>
+        </div>
+      </div>
     </div>
   );
 }

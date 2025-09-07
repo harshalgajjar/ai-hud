@@ -73,6 +73,8 @@ type DefaultChatbotProps = {
     contextImages?: string[];
     inputPlaceholder?: string;
     inputValue?: string;
+    tools?: any[];
+    toolMaxIterations?: number;
 };
 declare const DefaultChatbot: React.FC<DefaultChatbotProps>;
 

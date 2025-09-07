@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ChatOpenAI } from "@langchain/openai";
-import { AIMessage, HumanMessage, SystemMessage } from "@langchain/core/messages";
+import { AIMessage, HumanMessage, SystemMessage, ToolMessage } from "@langchain/core/messages";
 import { CHAT_STORAGE_PREFIX } from "./chatStorage";
 
 type UiMessage = {
@@ -31,6 +31,8 @@ export type DefaultChatbotProps = {
   contextImages?: string[]; // optional images to prepend as context (data URLs or https URLs)
   inputPlaceholder?: string; // placeholder text for the input box
   inputValue?: string; // externally controlled input value
+  tools?: any[]; // optional LangChain tools (e.g., from @langchain/core/tools)
+  toolMaxIterations?: number; // safety cap for tool loops
 };
 
 const OPENAI_API_URL = "https://api.openai.com/v1/chat/completions";
@@ -56,6 +58,8 @@ export const DefaultChatbot: React.FC<DefaultChatbotProps> = ({
   contextImages,
   inputPlaceholder,
   inputValue,
+  tools,
+  toolMaxIterations = 3,
 }) => {
   const resolveApiKey = (explicit?: string): string | null => {
     if (explicit && explicit !== "REPLACE_WITH_YOUR_OPENAI_API_KEY") return explicit;
@@ -106,6 +110,32 @@ export const DefaultChatbot: React.FC<DefaultChatbotProps> = ({
   const scrollToEnd = useCallback(() => {
     endRef.current?.scrollIntoView({ behavior: "smooth" });
   }, []);
+
+  // Normalize tools to OpenAI schema and keep an executor map
+  const { toolSchemas, toolExecutors } = useMemo(() => {
+    const schemas: any[] = [];
+    const exec: Record<string, (args: any) => Promise<any>> = {};
+    if (Array.isArray(tools)) {
+      for (const t of tools as any[]) {
+        if (!t) continue;
+        // Accept either { type:'function', function:{ name, parameters, description } } or simplified { type:'function', name, parameters, description }
+        if (t.type === "function" && t.function && t.function.name) {
+          schemas.push({ type: "function", function: t.function });
+          const fname = t.function.name;
+          if (typeof t.invoke === "function") exec[fname] = t.invoke.bind(t);
+          else if (typeof t.call === "function") exec[fname] = t.call.bind(t);
+          else if (typeof t.func === "function") exec[fname] = t.func.bind(t);
+        } else if (t.type === "function" && t.name) {
+          const fn = { name: t.name, description: t.description ?? "", parameters: t.parameters ?? { type: "object", properties: {} } };
+          schemas.push({ type: "function", function: fn });
+          if (typeof t.invoke === "function") exec[t.name] = t.invoke.bind(t);
+          else if (typeof t.call === "function") exec[t.name] = t.call.bind(t);
+          else if (typeof t.func === "function") exec[t.name] = t.func.bind(t);
+        }
+      }
+    }
+    return { toolSchemas: schemas, toolExecutors: exec };
+  }, [tools]);
 
   const handlePickImages = async (
     e: React.ChangeEvent<HTMLInputElement>
@@ -199,7 +229,7 @@ export const DefaultChatbot: React.FC<DefaultChatbotProps> = ({
 
     try {
       // Translate our OpenAI-like structure to LangChain messages
-      const lcMsgs: (SystemMessage | HumanMessage | AIMessage)[] = [];
+      let lcMsgs: (SystemMessage | HumanMessage | AIMessage)[] = [];
       const openaiMessages = buildOpenAIMessages(messages, {
         text: userMsg.text || "",
         images: userMsg.images || [],
@@ -220,8 +250,42 @@ export const DefaultChatbot: React.FC<DefaultChatbotProps> = ({
         }
       }
 
-      const chat = new ChatOpenAI({ modelName: model, temperature: 0.7, apiKey: apiKey ?? undefined });
-      const response = await chat.invoke(lcMsgs);
+      const base = new ChatOpenAI({ modelName: model, temperature: 0.7, apiKey: apiKey ?? undefined });
+      const chat = (toolSchemas.length > 0 ? (base as any).bind({ tools: toolSchemas }) : base) as ChatOpenAI;
+
+      let response: AIMessage = await (chat as any).invoke(lcMsgs);
+
+      // Tool-calling loop: execute tools then feed results back until no calls or cap reached
+      let iterations = 0;
+      while (
+        iterations < toolMaxIterations &&
+        Array.isArray((response as any).tool_calls) &&
+        (response as any).tool_calls.length > 0 &&
+        toolSchemas.length > 0
+      ) {
+        const calls: Array<{ id: string; name?: string; args?: any; function?: { name: string; arguments: string } }> = (response as any).tool_calls;
+        const toolMsgs: ToolMessage[] = [];
+        for (const call of calls) {
+          const fname = call.name ?? call.function?.name;
+          const rawArgs = call.args ?? call.function?.arguments;
+          let parsedArgs: any = rawArgs;
+          if (typeof rawArgs === "string") {
+            try { parsedArgs = JSON.parse(rawArgs); } catch { parsedArgs = rawArgs; }
+          }
+          const exec = fname ? toolExecutors[fname] : undefined;
+          let out: any = `Tool '${fname}' not found`;
+          try {
+            if (exec) out = await exec(parsedArgs);
+          } catch (e: any) {
+            out = `Error from tool '${fname}': ${e?.message || String(e)}`;
+          }
+          toolMsgs.push(new ToolMessage({ tool_call_id: call.id, content: typeof out === "string" ? out : JSON.stringify(out) }));
+        }
+        lcMsgs = [...lcMsgs, response, ...toolMsgs];
+        response = await (chat as any).invoke(lcMsgs);
+        iterations += 1;
+      }
+
       const content = typeof response.content === "string" ? response.content : JSON.stringify(response.content);
       const assistant: UiMessage = {
         id: String(Date.now() + 1),
