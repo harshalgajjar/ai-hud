@@ -209,6 +209,29 @@ function App() {
           </div>
         </div>
       </div>
+
+      <div className="row gy-3 align-items-start mb-3">
+        <div className="col-12 col-md-2"><h2>Agents</h2></div>
+        <div className="col-12 col-md example-container">
+          <h3>Simple agents</h3>
+          <ChatEnabled
+            openWindowOnClick
+            windowProps={{ title: "Agents", position: "auto", width: 360, height: 420 }}
+            windowContent={
+              <DefaultChatbot
+                conversationId="example-agents"
+                placeholderApiKey={apiKey}
+                agents={[
+                  { id: "analyst", name: "Analyst", systemPrompt: "You are a data analyst who explains charts and numbers clearly." },
+                  { id: "support", name: "Support", systemPrompt: "You are a helpful product support agent for our app." },
+                ]}
+              />
+            }
+          >
+            <div className="card">Open window (agents)</div>
+          </ChatEnabled>
+        </div>
+      </div>
     </div>
   );
 }

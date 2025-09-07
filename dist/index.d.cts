@@ -61,6 +61,13 @@ type ChatEnabledProps = {
 };
 declare const ChatEnabled: React.ForwardRefExoticComponent<ChatEnabledProps & React.RefAttributes<HTMLButtonElement>>;
 
+type ChatAgent = {
+    id: string;
+    name: string;
+    systemPrompt?: string;
+    context?: unknown;
+    icon?: React.ReactNode;
+};
 type DefaultChatbotProps = {
     model?: string;
     placeholderApiKey?: string;
@@ -73,6 +80,9 @@ type DefaultChatbotProps = {
     contextImages?: string[];
     inputPlaceholder?: string;
     inputValue?: string;
+    agents?: ChatAgent[];
+    activeAgentId?: string;
+    onAgentChange?: (agentId: string) => void;
 };
 declare const DefaultChatbot: React.FC<DefaultChatbotProps>;
 
@@ -81,4 +91,4 @@ declare function getConversationStorageKey(conversationId: string): string;
 declare function clearConversation(conversationId: string): void;
 declare function clearAllConversations(): void;
 
-export { CHAT_STORAGE_PREFIX, ChatEnabled, type ChatEnabledProps, DefaultChatbot, type DefaultChatbotProps, FloatingWindow, type FloatingWindowCorner, type FloatingWindowPosition, type FloatingWindowProps, clearAllConversations, clearConversation, getConversationStorageKey };
+export { CHAT_STORAGE_PREFIX, type ChatAgent, ChatEnabled, type ChatEnabledProps, DefaultChatbot, type DefaultChatbotProps, FloatingWindow, type FloatingWindowCorner, type FloatingWindowPosition, type FloatingWindowProps, clearAllConversations, clearConversation, getConversationStorageKey };

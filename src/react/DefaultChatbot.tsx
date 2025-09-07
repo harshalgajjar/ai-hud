@@ -17,6 +17,14 @@ type OpenAIMessage =
   | { role: "assistant"; content: string }
   | { role: "user"; content: string | UserContentPart[] };
 
+export type ChatAgent = {
+  id: string;
+  name: string;
+  systemPrompt?: string;
+  context?: unknown;
+  icon?: React.ReactNode;
+};
+
 export type DefaultChatbotProps = {
   model?: string; // OpenAI model id with vision support
   placeholderApiKey?: string; // optional explicit key (prefer server proxy in production)
@@ -29,6 +37,9 @@ export type DefaultChatbotProps = {
   contextImages?: string[]; // optional images to prepend as context (data URLs or https URLs)
   inputPlaceholder?: string; // placeholder text for the input box
   inputValue?: string; // externally controlled input value
+  agents?: ChatAgent[]; // optional list of agents a user can pick from
+  activeAgentId?: string; // controlled active agent
+  onAgentChange?: (agentId: string) => void; // notify on agent change
 };
 
 const OPENAI_API_URL = "https://api.openai.com/v1/chat/completions";
@@ -54,6 +65,9 @@ export const DefaultChatbot: React.FC<DefaultChatbotProps> = ({
   contextImages,
   inputPlaceholder,
   inputValue,
+  agents,
+  activeAgentId,
+  onAgentChange,
 }) => {
   const resolveApiKey = (explicit?: string): string | null => {
     if (explicit && explicit !== "REPLACE_WITH_YOUR_OPENAI_API_KEY") return explicit;
@@ -100,6 +114,10 @@ export const DefaultChatbot: React.FC<DefaultChatbotProps> = ({
   const [pendingImages, setPendingImages] = useState<string[]>([]);
   const [isSending, setIsSending] = useState(false);
   const endRef = useRef<HTMLDivElement | null>(null);
+  const [uncontrolledAgentId, setUncontrolledAgentId] = useState<string | undefined>(() => agents?.[0]?.id);
+
+  const effectiveAgentId = (activeAgentId ?? uncontrolledAgentId) as string | undefined;
+  const effectiveAgent = agents?.find(a => a.id === effectiveAgentId);
 
   const scrollToEnd = useCallback(() => {
     endRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -125,6 +143,9 @@ export const DefaultChatbot: React.FC<DefaultChatbotProps> = ({
       nextUser?: { text: string; images: string[] }
     ): OpenAIMessage[] => {
       const result: OpenAIMessage[] = [];
+      if (effectiveAgent?.systemPrompt) {
+        result.push({ role: "system", content: effectiveAgent.systemPrompt });
+      }
       if (systemPrompt) {
         result.push({ role: "system", content: systemPrompt });
       }
@@ -136,6 +157,13 @@ export const DefaultChatbot: React.FC<DefaultChatbotProps> = ({
           serialized = String(context);
         }
         result.push({ role: "system", content: `Context: ${serialized}` });
+      }
+      if (typeof effectiveAgent?.context !== "undefined") {
+        try {
+          result.push({ role: "system", content: `AgentContext: ${JSON.stringify(effectiveAgent.context)}` });
+        } catch {
+          result.push({ role: "system", content: `AgentContext: ${String(effectiveAgent.context)}` });
+        }
       }
       if (Array.isArray(contextImages) && contextImages.length > 0) {
         // Ensure data URLs are converted to https if needed (OpenAI requires hosted URLs in some models)
@@ -178,7 +206,7 @@ export const DefaultChatbot: React.FC<DefaultChatbotProps> = ({
       console.log("result", result)
       return result;
     },
-    [systemPrompt, context]
+    [systemPrompt, context, effectiveAgent?.systemPrompt, effectiveAgent?.context]
   );
 
   const send = useCallback(async () => {
@@ -265,6 +293,37 @@ export const DefaultChatbot: React.FC<DefaultChatbotProps> = ({
   return (
     <div className={className} style={{ display: "flex", flexDirection: "column", height: "100%", ...style }}>
       <div style={{ flex: 1, overflow: "auto", padding: 12, background: "#ffffff" }}>
+        {Array.isArray(agents) && agents.length > 0 && (
+          <div style={{ display: "flex", gap: 8, marginBottom: 8, flexWrap: "wrap" }}>
+            {agents.map((agent) => {
+              const selected = agent.id === effectiveAgentId;
+              return (
+                <button
+                  key={agent.id}
+                  type="button"
+                  onClick={() => {
+                    if (activeAgentId && onAgentChange) onAgentChange(agent.id);
+                    if (!activeAgentId) setUncontrolledAgentId(agent.id);
+                  }}
+                  style={{
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: 6,
+                    padding: "6px 10px",
+                    borderRadius: 8,
+                    border: selected ? "1px solid #111827" : "1px solid #e5e7eb",
+                    background: selected ? "#111827" : "white",
+                    color: selected ? "white" : "#111827",
+                    cursor: "pointer",
+                  }}
+                >
+                  {agent.icon}
+                  <span>{agent.name}</span>
+                </button>
+              );
+            })}
+          </div>
+        )}
         {messages.map((m) => (
           <div key={m.id} style={{ marginBottom: 10, display: "flex", justifyContent: m.role === "user" ? "flex-end" : "flex-start" }}>
             <div
