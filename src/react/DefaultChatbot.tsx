@@ -31,7 +31,12 @@ export type DefaultChatbotProps = {
   contextImages?: string[]; // optional images to prepend as context (data URLs or https URLs)
   inputPlaceholder?: string; // placeholder text for the input box
   inputValue?: string; // externally controlled input value
-  tools?: any[]; // optional LangChain tools (e.g., from @langchain/core/tools)
+  // Simpler tool interface: pass OpenAI function schema + local executor
+  tools?: Array<{
+    type: "function";
+    function: { name: string; description?: string; parameters?: any };
+    execute: (args: any) => Promise<any> | any;
+  }>;
   toolMaxIterations?: number; // safety cap for tool loops
 };
 
@@ -111,29 +116,21 @@ export const DefaultChatbot: React.FC<DefaultChatbotProps> = ({
     endRef.current?.scrollIntoView({ behavior: "smooth" });
   }, []);
 
-  // Normalize tools to OpenAI schema and keep an executor map
+  const sanitizeAssistantText = useCallback((text: string | undefined): string => {
+    if (!text) return "";
+    return text
+      .replace(/\\\(/g, "(")
+      .replace(/\\\)/g, ")")
+      .replace(/\\times/g, "×")
+      .replace(/\\n/g, "\n");
+  }, []);
+
+  // Prepare tool schemas and executors (simple, explicit contract)
   const { toolSchemas, toolExecutors } = useMemo(() => {
-    const schemas: any[] = [];
+    if (!Array.isArray(tools)) return { toolSchemas: [] as any[], toolExecutors: {} as Record<string, (args: any) => Promise<any>> };
+    const schemas = tools.map(t => ({ type: "function", function: { name: t.function.name, description: t.function.description ?? "", parameters: t.function.parameters ?? { type: "object", properties: {} } } }));
     const exec: Record<string, (args: any) => Promise<any>> = {};
-    if (Array.isArray(tools)) {
-      for (const t of tools as any[]) {
-        if (!t) continue;
-        // Accept either { type:'function', function:{ name, parameters, description } } or simplified { type:'function', name, parameters, description }
-        if (t.type === "function" && t.function && t.function.name) {
-          schemas.push({ type: "function", function: t.function });
-          const fname = t.function.name;
-          if (typeof t.invoke === "function") exec[fname] = t.invoke.bind(t);
-          else if (typeof t.call === "function") exec[fname] = t.call.bind(t);
-          else if (typeof t.func === "function") exec[fname] = t.func.bind(t);
-        } else if (t.type === "function" && t.name) {
-          const fn = { name: t.name, description: t.description ?? "", parameters: t.parameters ?? { type: "object", properties: {} } };
-          schemas.push({ type: "function", function: fn });
-          if (typeof t.invoke === "function") exec[t.name] = t.invoke.bind(t);
-          else if (typeof t.call === "function") exec[t.name] = t.call.bind(t);
-          else if (typeof t.func === "function") exec[t.name] = t.func.bind(t);
-        }
-      }
-    }
+    for (const t of tools) exec[t.function.name] = async (args: any) => await t.execute(args);
     return { toolSchemas: schemas, toolExecutors: exec };
   }, [tools]);
 
@@ -350,7 +347,7 @@ export const DefaultChatbot: React.FC<DefaultChatbotProps> = ({
                 wordBreak: "break-word",
               }}
             >
-              {m.text}
+              {m.role === "assistant" ? sanitizeAssistantText(m.text) : m.text}
               {m.images && m.images.length > 0 && (
                 <div style={{ display: "flex", gap: 8, marginTop: 8, flexWrap: "wrap" }}>
                   {m.images.map((url, i) => (

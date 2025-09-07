@@ -227,14 +227,16 @@ function App() {
                 tools={[
                   {
                     type: "function",
-                    name: "calculator",
-                    description: "Evaluate a basic arithmetic expression like '2 + 2 * 3'",
-                    parameters: {
-                      type: "object",
-                      properties: { expression: { type: "string", description: "Math expression to evaluate" } },
-                      required: ["expression"],
+                    function: {
+                      name: "calculator",
+                      description: "Evaluate a basic arithmetic expression like '2 + 2 * 3'",
+                      parameters: {
+                        type: "object",
+                        properties: { expression: { type: "string", description: "Math expression to evaluate" } },
+                        required: ["expression"],
+                      },
                     },
-                    async invoke(args: any) {
+                    async execute(args: any) {
                       const expr = typeof args === "string" ? args : (args?.expression ?? "");
                       try {
                         // eslint-disable-next-line no-new-func
