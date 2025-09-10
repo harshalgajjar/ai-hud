@@ -2,6 +2,10 @@
 
 A lightweight React component wrapper that allows for chatting with components, it's data and with any additional context.
 
+<a href="https://buymeacoffee.com/harshalgajjar" rel="nofollow">
+  <img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" height="40" />
+</a>
+
 ### Installation
 
 ```bash
