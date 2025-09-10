@@ -212,48 +212,115 @@ function App() {
       </div>
 
       <div className="row gy-3 align-items-start mb-3">
-        <div className="col-12 col-md-2"><h2>Tools</h2></div>
-        <div className="col-12 col-md example-container">
-          <h3>Calculator tool</h3>
-          <ChatEnabled
-            openWindowOnClick
-            windowProps={{ title: "Tools: Calculator", position: "auto", width: 360, height: 420 }}
-            windowContent={
-              <DefaultChatbot
-                conversationId="example-tools-calc"
-                placeholderApiKey={apiKey}
-                systemPrompt="You can use a calculator tool to compute expressions when needed."
-                inputPlaceholder="Ask: what is (23*7 + 42)/5?"
-                inputValue="What is (23*7 + 42)/5?"
-                tools={[
-                  {
-                    type: "function",
-                    function: {
-                      name: "calculator",
-                      description: "Evaluate a basic arithmetic expression like '2 + 2 * 3'",
-                      parameters: {
-                        type: "object",
-                        properties: { expression: { type: "string", description: "Math expression to evaluate" } },
-                        required: ["expression"],
+        <div className="col-12 col-md-2"><h2>Tool(s) calling</h2></div>
+        <div className="col-12 col-md">
+          <div className="d-flex flex-row flex-wrap gap-3">
+            <div className="example-container">
+              <h3>Calculator tool</h3>
+              <ChatEnabled
+                openWindowOnClick
+                windowProps={{ title: "Tools: Calculator", position: "auto", width: 360, height: 420 }}
+                windowContent={
+                  <DefaultChatbot
+                    conversationId="example-tools-calc"
+                    placeholderApiKey={apiKey}
+                    systemPrompt="You can use a calculator tool to compute expressions when needed."
+                    inputPlaceholder="Ask: what is (23*7 + 42)/5?"
+                    inputValue="What is (23*7 + 42)/5?"
+                    tools={[
+                      {
+                        type: "function",
+                        function: {
+                          name: "calculator",
+                          description: "Evaluate a basic arithmetic expression like '2 + 2 * 3'",
+                          parameters: {
+                            type: "object",
+                            properties: { expression: { type: "string", description: "Math expression to evaluate" } },
+                            required: ["expression"],
+                          },
+                        },
+                        async execute(args: any) {
+                          const expr = typeof args === "string" ? args : (args?.expression ?? "");
+                          try {
+                            // eslint-disable-next-line no-new-func
+                            const result = Function(`"use strict"; return (${expr})`)();
+                            return String(result);
+                          } catch (e: any) {
+                            return `calc error: ${e?.message || String(e)}`;
+                          }
+                        },
                       },
-                    },
-                    async execute(args: any) {
-                      const expr = typeof args === "string" ? args : (args?.expression ?? "");
-                      try {
-                        // eslint-disable-next-line no-new-func
-                        const result = Function(`"use strict"; return (${expr})`)();
-                        return String(result);
-                      } catch (e: any) {
-                        return `calc error: ${e?.message || String(e)}`;
-                      }
-                    },
-                  },
-                ]}
-              />
-            }
-          >
-            <div className="card">Open window (tools)</div>
-          </ChatEnabled>
+                    ]}
+                  />
+                }
+              >
+                <div className="card">Open window (tools)</div>
+              </ChatEnabled>
+            </div>
+            <div className="example-container">
+              <h3>Calculator & jokes tool</h3>
+              <ChatEnabled
+                openWindowOnClick
+                windowProps={{ title: "Tools: Calculator + Jokes", position: "auto", width: 360, height: 420 }}
+                windowContent={
+                  <DefaultChatbot
+                    conversationId="example-tools-2"
+                    placeholderApiKey={apiKey}
+                    systemPrompt="You can use a calculator tool to compute expressions when needed."
+                    inputPlaceholder="Ask: Repeat a joke 1+2 number of times"
+                    inputValue="Repeat a joke 1+2 number of times"
+                    tools={[
+                      {
+                        type: "function",
+                        function: {
+                          name: "calculator",
+                          description: "Evaluate a basic arithmetic expression like '2 + 2 * 3'",
+                          parameters: {
+                            type: "object",
+                            properties: { expression: { type: "string", description: "Math expression to evaluate" } },
+                            required: ["expression"],
+                          },
+                        },
+                        async execute(args: any) {
+                          const expr = typeof args === "string" ? args : (args?.expression ?? "");
+                          try {
+                            // eslint-disable-next-line no-new-func
+                            const result = Function(`"use strict"; return (${expr})`)();
+                            return String(result);
+                          } catch (e: any) {
+                            return `calc error: ${e?.message || String(e)}`;
+                          }
+                        },
+                      },
+                      {
+                        type: "function",
+                        function: {
+                          name: "joke-generator",
+                          description: "Tells a joke",
+                          parameters: {
+                            type: "object",
+                            properties: {},
+                            required: [],
+                          },
+                        },
+                        async execute(args: any) {
+                          try {
+                            // eslint-disable-next-line no-new-func
+                            const result = Function(`"use strict"; return ("Why did the chicken cross the road? To get to the other side.")`)();
+                            return String(result);
+                          } catch (e: any) {
+                            return `joke error: ${e?.message || String(e)}`;
+                          }
+                        },
+                      },
+                    ]}
+                  />
+                }
+              >
+                <div className="card">Open window (tools)</div>
+              </ChatEnabled>
+            </div>
+          </div>
         </div>
       </div>
     </div>
