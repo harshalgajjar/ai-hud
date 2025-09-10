@@ -5,7 +5,7 @@ import { CHAT_STORAGE_PREFIX } from "./chatStorage";
 
 type UiMessage = {
   id: string;
-  role: "user" | "assistant";
+  role: "user" | "assistant" | "tool";
   text?: string;
   images?: string[]; // data URLs for previews
 };
@@ -276,6 +276,15 @@ export const DefaultChatbot: React.FC<DefaultChatbotProps> = ({
           } catch (e: any) {
             out = `Error from tool '${fname}': ${e?.message || String(e)}`;
           }
+          // Push a visual tool message into chat history
+          setMessages((prev) => [
+            ...prev,
+            {
+              id: `${Date.now()}_${fname}`,
+              role: "tool",
+              text: `Called ${fname} with ${typeof parsedArgs === "string" ? parsedArgs : JSON.stringify(parsedArgs)}\n→ ${typeof out === "string" ? out : JSON.stringify(out)}`,
+            },
+          ]);
           toolMsgs.push(new ToolMessage({ tool_call_id: call.id, content: typeof out === "string" ? out : JSON.stringify(out) }));
         }
         lcMsgs = [...lcMsgs, response, ...toolMsgs];
@@ -340,8 +349,8 @@ export const DefaultChatbot: React.FC<DefaultChatbotProps> = ({
                 maxWidth: "80%",
                 padding: "8px 10px",
                 borderRadius: 10,
-                border: "1px solid rgba(0,0,0,0.06)",
-                background: m.role === "user" ? "#111827" : "#f3f4f6",
+                border: m.role === "tool" ? "1px dashed rgba(0,0,0,0.2)" : "1px solid rgba(0,0,0,0.06)",
+                background: m.role === "user" ? "#111827" : m.role === "tool" ? "#fff7ed" : "#f3f4f6",
                 color: m.role === "user" ? "#ffffff" : "#111827",
                 whiteSpace: "pre-wrap",
                 wordBreak: "break-word",

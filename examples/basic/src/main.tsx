@@ -267,8 +267,8 @@ function App() {
                     conversationId="example-tools-2"
                     placeholderApiKey={apiKey}
                     systemPrompt="You can use a calculator tool to compute expressions when needed."
-                    inputPlaceholder="Ask: Repeat a joke 1+2 number of times"
-                    inputValue="Repeat a joke 1+2 number of times"
+                    inputPlaceholder="Ask: Repeat a joke 1+2 number of times. Use the calculator tool to find the mathematical answer."
+                    inputValue="Repeat a joke 1+2 number of times. Use the calculator tool to find the mathematical answer."
                     tools={[
                       {
                         type: "function",
