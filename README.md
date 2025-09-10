@@ -290,6 +290,67 @@ Notes:
 - The model chooses when to call tools based on the schema you provide. Return strings (or JSON-serializable data) from `execute`.
 - For production, run tool code on a server when needed; the example above runs in-browser for simplicity.
 
+### Tool calling (multiple tools)
+
+You can expose multiple tools. The model decides which to call (and in what order) based on your instructions and the tool schemas.
+
+```tsx
+import { ChatEnabled, DefaultChatbot } from '@ai-hud/chat-enabled';
+
+<ChatEnabled
+  openWindowOnClick
+  windowProps={{ title: 'Tools: Calculator + Jokes', position: 'auto', width: 360, height: 420 }}
+  windowContent={
+    <DefaultChatbot
+      conversationId="example-tools-2"
+      systemPrompt="You can use a calculator tool to compute expressions when needed."
+      inputPlaceholder="Ask: Repeat a joke 1+2 number of times. Use the calculator tool to find the mathematical answer."
+      tools={[
+        {
+          type: 'function',
+          function: {
+            name: 'calculator',
+            description: "Evaluate a basic arithmetic expression like '2 + 2 * 3'",
+            parameters: {
+              type: 'object',
+              properties: {
+                expression: { type: 'string', description: 'Math expression to evaluate' },
+              },
+              required: ['expression'],
+            },
+          },
+          async execute(args: any) {
+            const expr = typeof args === 'string' ? args : (args?.expression ?? '');
+            try {
+              const result = Function(`"use strict"; return (${expr})`)();
+              return String(result);
+            } catch (e: any) {
+              return `calc error: ${e?.message || String(e)}`;
+            }
+          },
+        },
+        {
+          type: 'function',
+          function: {
+            name: 'joke-generator',
+            description: 'Tells a short joke',
+            parameters: { type: 'object', properties: {}, required: [] },
+          },
+          async execute() {
+            return 'Why did the chicken cross the road? To get to the other side.';
+          },
+        },
+      ]}
+    />
+  }
+>
+  <div style={{ width: 280, height: 160, background: '#f3f4f6', borderRadius: 12 }} />
+</ChatEnabled>
+```
+
+Tip:
+- Encourage the model via `systemPrompt`/user prompt to compute counts with the calculator tool and then apply the result to how it uses other tools or structures its response.
+
 ### Local development
 
 This repo includes a minimal Vite example for development:
