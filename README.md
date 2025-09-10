@@ -239,6 +239,57 @@ You can also provide `contextImages` directly:
 </ChatEnabled>
 ```
 
+### Tool calling (basic example)
+
+`DefaultChatbot` can call developer-defined tools (function calling). Provide a list of tools via the `tools` prop; each tool includes an OpenAI-style JSON schema and an `execute` function that runs in your app.
+
+```tsx
+import { ChatEnabled, DefaultChatbot } from '@ai-hud/chat-enabled';
+
+<ChatEnabled
+  openWindowOnClick
+  windowProps={{ title: 'Tools: Calculator', position: 'auto', width: 360, height: 420 }}
+  windowContent={
+    <DefaultChatbot
+      conversationId="example-tools-calc"
+      systemPrompt="You can use a calculator tool to compute expressions when needed."
+      inputPlaceholder="Ask: what is (23*7 + 42)/5?"
+      tools={[
+        {
+          type: 'function',
+          function: {
+            name: 'calculator',
+            description: "Evaluate a basic arithmetic expression like '2 + 2 * 3'",
+            parameters: {
+              type: 'object',
+              properties: {
+                expression: { type: 'string', description: 'Math expression to evaluate' },
+              },
+              required: ['expression'],
+            },
+          },
+          async execute(args: any) {
+            const expr = typeof args === 'string' ? args : (args?.expression ?? '');
+            try {
+              const result = Function(`"use strict"; return (${expr})`)();
+              return String(result);
+            } catch (e: any) {
+              return `calc error: ${e?.message || String(e)}`;
+            }
+          },
+        },
+      ]}
+    />
+  }
+>
+  <div style={{ width: 280, height: 160, background: '#f3f4f6', borderRadius: 12 }} />
+</ChatEnabled>
+```
+
+Notes:
+- The model chooses when to call tools based on the schema you provide. Return strings (or JSON-serializable data) from `execute`.
+- For production, run tool code on a server when needed; the example above runs in-browser for simplicity.
+
 ### Local development
 
 This repo includes a minimal Vite example for development:
