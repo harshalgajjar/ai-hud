@@ -3,7 +3,7 @@
   "version": "0.1.7",
   "private": false,
   "description": "A lightweight React wrapper that shows a hover chat button around its children.",
-  "license": "MIT",
+  "license": "EPL-2.0",
   "author": "",
   "repository": {
     "type": "git",
