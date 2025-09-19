@@ -157,7 +157,7 @@ export const ChatEnabled = React.forwardRef<HTMLButtonElement, ChatEnabledProps>
         justifyContent: "center",
         border: "1px solid rgba(0,0,0,0.08)",
         background: disabled ? "#f3f4f6" : "white",
-        color: disabled ? "#9ca3af" : undefined,
+        color: disabled ? "#9ca3af" : "#111827",
         boxShadow:
           "0 2px 6px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06)",
         cursor: disabled ? "not-allowed" : "pointer",
@@ -190,8 +190,8 @@ export const ChatEnabled = React.forwardRef<HTMLButtonElement, ChatEnabledProps>
             {icon ?? (
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                width={Math.max(12, Math.floor(buttonSize * 0.5))}
-                height={Math.max(12, Math.floor(buttonSize * 0.5))}
+                width={Math.max(14, Math.floor(buttonSize * 0.6))}
+                height={Math.max(14, Math.floor(buttonSize * 0.6))}
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
