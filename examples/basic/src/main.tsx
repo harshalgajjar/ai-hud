@@ -79,7 +79,7 @@ function App() {
             <div className="example-container">
               <h3>Custom button</h3>
               <ChatEnabled
-                renderButton={(btn) => (
+                renderButton={(btn: React.ButtonHTMLAttributes<HTMLButtonElement> & { style?: React.CSSProperties }) => (
                   <button {...btn} style={{ ...btn.style, background: "#111827", color: "white" }}>
                     Chat
                   </button>

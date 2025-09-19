@@ -14,10 +14,10 @@
     "forceConsistentCasingInFileNames": true,
     "baseUrl": ".",
     "paths": {
-      "@ai-hud/chat-enabled": ["../../src"]
+      "@ai-hud/chat-enabled": ["../../dist", "../../dist/index.d.ts"]
     }
   },
-  "include": ["src"]
+  "include": ["src", "src/types/*.d.ts"]
 }
 
 

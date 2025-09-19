@@ -6,7 +6,7 @@ export default defineConfig({
   plugins: [react()],
   resolve: {
     alias: {
-      "@ai-hud/chat-enabled": path.resolve(__dirname, "../../src"),
+      "@ai-hud/chat-enabled": path.resolve(__dirname, "../../dist"),
     },
   },
 });
