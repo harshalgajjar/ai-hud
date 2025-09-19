@@ -1,6 +1,6 @@
 {
   "name": "@ai-hud/chat-enabled",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "private": false,
   "description": "A lightweight React wrapper that shows a hover chat button around its children.",
   "license": "EPL-2.0",
