@@ -7,12 +7,12 @@
   "author": "",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/harshal/ai-hud.git"
+    "url": "git+https://github.com/harshalgajjar/ai-hud.git"
   },
   "bugs": {
-    "url": "https://github.com/harshal/ai-hud/issues"
+    "url": "https://github.com/harshalgajjar/ai-hud/issues"
   },
-  "homepage": "https://github.com/harshal/ai-hud#readme",
+  "homepage": "https://github.com/harshalgajjar/ai-hud#readme",
   "type": "module",
   "main": "dist/index.cjs",
   "module": "dist/index.js",
