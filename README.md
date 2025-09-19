@@ -6,6 +6,20 @@ A lightweight React component wrapper that allows for chatting with components, 
   <img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" height="40" />
 </a>
 
+### Scope
+
+Pass context as a json object
+<!-- ![Context](assets/json_context_gif.gif) -->
+<img src="assets/json_context_gif.gif" width="360px">
+
+Pass (more) context as a screenshot of the component
+<!-- ![Visual context](assets/visual_context_gif.gif) -->
+<img src="assets/visual_context_gif.gif" width="360px">
+
+Empower llm with tools
+<!-- ![Tool calling](assets/tools_gif.gif) -->
+<img src="assets/tools_gif.gif" width="360px">
+
 ### Installation
 
 ```bash
@@ -20,7 +34,10 @@ Peer dependencies:
 - **react**: >=17
 - **react-dom**: >=17
 
-### Quick start
+### Quick guides
+
+#### Add only the button
+<img src="assets/chat_button.png" width="120px">
 
 ```tsx
 import { ChatEnabled } from '@ai-hud/chat-enabled';
@@ -98,6 +115,7 @@ const [open, setOpen] = useState(false);
 Note: In JSX you must use `<ChatEnabled />` (PascalCase). A lower-cased alias is exported for named imports, but not for JSX tags.
 
 ### Floating window (built-in)
+<img src="assets/floating_window.png" width="240px">
 
 `ChatEnabled` can open a clean floating window on click. Pass `windowContent` for dynamic content and `windowProps` to control size/position.
 
@@ -140,6 +158,7 @@ Note: In JSX you must use `<ChatEnabled />` (PascalCase). A lower-cased alias is
 - **draggable**: Allow dragging the window by its header. Default: true.
 
 ### Default chatbot (opt-in)
+<img src="assets/default_chatbot.png" width="240px">
 
 Use `DefaultChatbot` by passing it via `windowContent`. This is opt-in and not automatic.
 
@@ -183,6 +202,7 @@ clearAllConversations();
 Note: If you omit `conversationId`, an anonymous conversation is created and its history is automatically cleared from localStorage when the window closes.
 
 ### Send component image as context
+<img src="assets/visual_context_gif.gif" width="360px">
 
 You can automatically attach a screenshot of the wrapped child as visual context for the chatbot. Enable this by setting an option on `windowProps`.
 
@@ -240,6 +260,7 @@ You can also provide `contextImages` directly:
 ```
 
 ### Tool calling (basic example)
+<img src="assets/tools_gif.gif" width="360px">
 
 `DefaultChatbot` can call developer-defined tools (function calling). Provide a list of tools via the `tools` prop; each tool includes an OpenAI-style JSON schema and an `execute` function that runs in your app.
 
