@@ -56,6 +56,7 @@
       "esm",
       "cjs"
     ],
+    "platform": "browser",
     "dts": true,
     "splitting": false,
     "sourcemap": true,
