@@ -2,10 +2,6 @@
 
 A lightweight React component wrapper that allows for chatting with components, it's data and with any additional context.
 
-<a href="https://buymeacoffee.com/harshalgajjar" rel="nofollow">
-  <img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" height="40" />
-</a>
-
 ### Scope
 
 Pass context as a json object
@@ -392,3 +388,7 @@ The example uses a path alias to the local `src/` for instant iteration. To test
 ### License
 
 EPL-2.0 license
+
+<a href="https://buymeacoffee.com/harshalgajjar" rel="nofollow">
+  <img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" height="40" />
+</a>
