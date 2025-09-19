@@ -70,13 +70,13 @@ export const DefaultChatbot: React.FC<DefaultChatbotProps> = ({
     if (explicit && explicit !== "REPLACE_WITH_YOUR_OPENAI_API_KEY") return explicit;
     try {
       const g = (globalThis as any) || {};
-      if (typeof g.AI_HUD_OPENAI_API_KEY === "string" && g.AI_HUD_OPENAI_API_KEY) return g.AI_HUD_OPENAI_API_KEY;
-      if (typeof g.__AI_HUD_OPENAI_API_KEY__ === "string" && g.__AI_HUD_OPENAI_API_KEY__) return g.__AI_HUD_OPENAI_API_KEY__;
+      if (typeof g.OPENAI_API_KEY === "string" && g.OPENAI_API_KEY) return g.OPENAI_API_KEY;
+      if (typeof g.__OPENAI_API_KEY__ === "string" && g.__OPENAI_API_KEY__) return g.__OPENAI_API_KEY__;
     } catch {}
     try {
       const p = (globalThis as any).process;
-      if (p && p.env && typeof p.env.AI_HUD_OPENAI_API_KEY === "string") {
-        return p.env.AI_HUD_OPENAI_API_KEY as string;
+      if (p && p.env && typeof p.env.OPENAI_API_KEY === "string") {
+        return p.env.OPENAI_API_KEY as string;
       }
     } catch {}
     return null;

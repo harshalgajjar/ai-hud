@@ -5,7 +5,7 @@ import { ChatEnabled, DefaultChatbot, clearAllConversations, clearConversation }
 function App() {
   const [apiKey, setApiKey] = useState<string>(() => {
     try {
-      return (window as any).AI_HUD_OPENAI_API_KEY || "";
+      return (window as any).OPENAI_API_KEY || "";
     } catch {
       return "";
     }
@@ -13,7 +13,7 @@ function App() {
 
   useEffect(() => {
     try {
-      (window as any).AI_HUD_OPENAI_API_KEY = apiKey || undefined;
+      (window as any).OPENAI_API_KEY = apiKey || undefined;
     } catch { }
   }, [apiKey]);
 
