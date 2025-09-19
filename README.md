@@ -16,6 +16,8 @@ Empower llm with tools
 <!-- ![Tool calling](assets/tools_gif.gif) -->
 <img src="assets/tools_gif.gif" width="360px">
 
+Try here: [https://ai-hud.vercel.app/](https://ai-hud.vercel.app/)
+
 ### Installation
 
 ```bash
